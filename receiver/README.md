@@ -41,6 +41,30 @@
 - `SYNC_SECRET`
 - `ALLOWED_ORIGIN`
 
+## 最短部署步骤
+
+1. 在本地新建一个目录，把下面三个文件放进去：
+   - `github-data-receiver-worker.js`
+   - `wrangler.toml.example`
+   - `.dev.vars.example`
+
+2. 把 `wrangler.toml.example` 改名为 `wrangler.toml`
+
+3. 把 `.dev.vars.example` 改名为 `.dev.vars`
+
+4. 安装并登录 Wrangler 后执行：
+
+```bash
+wrangler login
+wrangler secret put GITHUB_TOKEN
+wrangler secret put SYNC_SECRET
+wrangler deploy
+```
+
+5. 部署成功后，把返回的 Worker URL 填回前端页面的：
+   - `接收地址（Webhook）`
+   - `接收密钥`
+
 ## 推荐环境变量
 
 - `GITHUB_TOKEN`: 你的 Fine-grained PAT

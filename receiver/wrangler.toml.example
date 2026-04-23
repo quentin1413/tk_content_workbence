@@ -1,0 +1,17 @@
+name = "tk-content-github-receiver"
+main = "github-data-receiver-worker.js"
+compatibility_date = "2026-04-23"
+workers_dev = true
+
+[observability]
+enabled = true
+
+[vars]
+GITHUB_REPO = "quentin1413/tk_content_workbench_data"
+GITHUB_BRANCH = "main"
+GITHUB_BASE_PATH = "submissions"
+ALLOWED_ORIGIN = "https://quentin1413.github.io"
+
+# Secrets should be added with:
+# wrangler secret put GITHUB_TOKEN
+# wrangler secret put SYNC_SECRET
