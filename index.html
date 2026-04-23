@@ -1,0 +1,2655 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.app{padding:1rem 0;font-family:var(--font-sans)}
+.api-bar{display:flex;gap:8px;align-items:center;margin-bottom:1.25rem;padding:10px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);flex-wrap:wrap}
+.api-bar label{font-size:12px;color:var(--color-text-secondary);white-space:nowrap;margin:0}
+.api-bar input{flex:1;min-width:160px;margin:0;font-size:12px}
+.api-bar select{margin:0;font-size:12px;width:auto}
+.api-status{font-size:11px;padding:2px 8px;border-radius:8px;white-space:nowrap}
+.api-status.ok{background:#E1F5EE;color:#0F6E56}
+.api-status.no{background:#FAEEDA;color:#854F0B}
+.model-cost{font-size:11px;color:var(--color-text-tertiary);white-space:nowrap}
+.tabs{display:flex;gap:6px;margin-bottom:1.25rem;flex-wrap:wrap}
+.tab{padding:6px 14px;border-radius:20px;border:0.5px solid var(--color-border-secondary);font-size:13px;cursor:pointer;background:transparent;color:var(--color-text-secondary)}
+.tab.active{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-primary);font-weight:500}
+.panel{display:none}.panel.active{display:block}
+label{font-size:13px;color:var(--color-text-secondary);display:block;margin-bottom:5px;margin-top:10px}
+label:first-child{margin-top:0}
+select,textarea{width:100%;margin-bottom:2px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.gen-btn{width:100%;margin-top:12px;padding:9px;font-size:14px;font-weight:500;cursor:pointer}
+.gen-btn:disabled{opacity:0.5;cursor:not-allowed}
+.output-area{margin-top:14px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);overflow:hidden;display:none}
+.output-header{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--color-background-secondary);border-bottom:0.5px solid var(--color-border-tertiary)}
+.output-label{font-size:12px;font-weight:500;color:var(--color-text-secondary)}
+.output-meta{font-size:11px;color:var(--color-text-tertiary)}
+.copy-btn{font-size:12px;padding:3px 10px;border-radius:10px;border:0.5px solid var(--color-border-secondary);cursor:pointer;background:transparent;color:var(--color-text-secondary)}
+.copy-btn:hover{background:var(--color-background-primary)}
+.output-content{padding:14px;font-size:13px;line-height:1.75;color:var(--color-text-primary);white-space:pre-wrap;max-height:500px;overflow-y:auto}
+.cursor{display:inline-block;width:2px;height:14px;background:var(--color-text-primary);animation:blink-cursor .6s step-end infinite;vertical-align:text-bottom;margin-left:1px}
+@keyframes blink-cursor{0%,100%{opacity:1}50%{opacity:0}}
+.compliance-note{margin-top:8px;padding:8px 10px;background:#FAEEDA;border-radius:var(--border-radius-md);font-size:12px;color:#854F0B;line-height:1.5}
+.tool-rec{margin-top:0;padding:8px 10px;background:#E1F5EE;border-radius:var(--border-radius-md);font-size:12px;color:#0F6E56;line-height:1.6}
+.tip{font-size:12px;color:var(--color-text-tertiary);margin-top:6px;line-height:1.5}
+.hidden{display:none!important}
+.outtype-tabs{display:flex;gap:6px;margin-bottom:12px}
+.outtype-tab{padding:5px 14px;border-radius:16px;border:0.5px solid var(--color-border-secondary);font-size:12px;cursor:pointer;background:transparent;color:var(--color-text-secondary)}
+.outtype-tab.active{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-primary);font-weight:500}
+.vo-note{margin-top:8px;padding:8px 10px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);font-size:12px;color:var(--color-text-secondary);line-height:1.6;border:0.5px solid var(--color-border-tertiary)}
+.product-note{margin-top:8px;padding:9px 10px;background:#EEF5FB;border-radius:var(--border-radius-md);font-size:12px;color:#35506B;line-height:1.65;border:0.5px solid #D6E3F1}
+.product-note strong{color:#17324D}
+.product-media{margin-top:8px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.media-card{position:relative;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);overflow:hidden;background:var(--color-background-primary)}
+.media-thumb{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:linear-gradient(135deg,#F7F3EE,#E8EEF7)}
+.media-body{padding:10px 11px}
+.media-title{font-size:12px;font-weight:600;color:var(--color-text-primary)}
+.media-desc{font-size:12px;line-height:1.55;color:var(--color-text-secondary);margin-top:4px}
+.media-tag{position:absolute;top:8px;left:8px;padding:2px 8px;border-radius:999px;background:rgba(23,50,77,0.88);color:#fff;font-size:11px}
+.ext-panel{padding:12px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-primary)}
+.ext-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.text-input{width:100%;margin-bottom:2px}
+.field-note{font-size:12px;color:var(--color-text-tertiary);margin-top:6px;line-height:1.55}
+.preview-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}
+.preview-card{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);overflow:hidden;background:var(--color-background-primary)}
+.preview-thumb{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;background:#F4F6F8}
+.preview-meta{padding:8px 10px;font-size:12px;color:var(--color-text-secondary);line-height:1.5}
+.ext-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.secondary-btn{flex:1;min-width:180px;margin-top:12px;padding:9px;font-size:14px;font-weight:500;cursor:pointer;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary)}
+.secondary-btn:disabled{opacity:0.5;cursor:not-allowed}
+.saved-products{margin-top:12px;padding:10px 12px;background:#F5F8FB;border-radius:var(--border-radius-md);border:0.5px solid #DDE6EF;font-size:12px;color:#35506B;line-height:1.7}
+.saved-products strong{color:#17324D}
+.github-box{margin-top:14px;padding:12px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:#FBFCFD}
+.github-box h3{font-size:14px;color:var(--color-text-primary);margin-bottom:8px}
+.github-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.github-status{margin-top:10px;padding:9px 10px;background:#EEF5FB;border-radius:var(--border-radius-md);font-size:12px;line-height:1.6;color:#35506B;border:0.5px solid #D6E3F1}
+@media (max-width:760px){
+  .row2,.row3,.ext-grid{grid-template-columns:1fr}
+  .output-header{flex-wrap:wrap;gap:8px}
+}
+</style>
+
+<div class="app">
+  <div class="api-bar">
+    <label>OpenAI API Key</label>
+    <input type="password" id="apikey" placeholder="sk-..." oninput="checkKey()">
+    <label style="margin-left:8px">模型</label>
+    <select id="model-select" onchange="updateModelCost()">
+      <option value="gpt-4o">gpt-4o（质量最高）</option>
+      <option value="gpt-4o-mini" selected>gpt-4o-mini（省钱 15x）</option>
+    </select>
+    <span class="model-cost" id="model-cost">约 $0.001–0.002 / 次</span>
+    <span class="api-status no" id="api-status">未配置</span>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('script',this)">脚本生成</div>
+    <div class="tab" onclick="switchTab('variant',this)">变体扩展</div>
+    <div class="tab" onclick="switchTab('localize',this)">本土化</div>
+    <div class="tab" onclick="switchTab('editor',this)">剪辑指令</div>
+    <div class="tab" onclick="switchTab('extension',this)">扩展产品</div>
+  </div>
+
+  <!-- 脚本生成 -->
+  <div id="panel-script" class="panel active">
+    <div class="row2">
+      <div>
+        <label>产品 SKU</label>
+        <select id="s-sku"></select>
+        <div class="product-note hidden" id="s-knowledge"></div>
+        <div class="product-media hidden" id="s-media"></div>
+        <label>目标受众（随 SKU 智能推荐）</label>
+        <select id="s-audience"></select>
+        <label>脚本类型</label>
+        <select id="s-type"><option value="problem → solution (empathetic, no graphic demonstration)">痛点 → 解决方案</option><option value="soft comparison vs old methods (no explicit leak visuals)">对比旧方法</option><option value="UGC-style authentic experience sharing">UGC 体验分享</option><option value="strong hook + product feature walkthrough">强钩子 + 功能展示</option><option value="education / myth-busting">科普 / 误区纠正</option></select>
+      </div>
+      <div>
+        <label>时长</label>
+        <select id="s-dur"><option value="5 seconds" selected>5秒</option><option value="10 seconds">10秒</option><option value="15 seconds">15秒</option><option value="30 seconds">30秒</option><option value="60 seconds">60秒</option></select>
+        <label>核心卖点（可选）</label>
+        <textarea id="s-points" rows="3" placeholder="例：超薄不侧漏、棉柔亲肤、12小时干爽..."></textarea>
+        <label>额外要求（可选）</label>
+        <textarea id="s-extra" rows="3" placeholder="例：结尾引导评论互动、语气口语化..."></textarea>
+      </div>
+    </div>
+    <div class="compliance-note">⚠️ 合规提醒：脚本自动规避液体展示、身体特写等高风险元素，优先使用情感化/生活化叙事。</div>
+    <button class="gen-btn" id="btn-script" onclick="generate('script')">生成脚本</button>
+    <div class="output-area" id="out-script">
+      <div class="output-header"><span class="output-label">生成结果</span><span class="output-meta" id="meta-script"></span><button class="copy-btn" onclick="copyOut('script')">复制</button></div>
+      <div class="output-content" id="out-script-text"></div>
+    </div>
+  </div>
+
+  <!-- 变体扩展 -->
+  <div id="panel-variant" class="panel">
+    <label>产品 SKU（必选）</label>
+    <select id="v-sku"></select>
+    <div class="product-note hidden" id="v-knowledge"></div>
+    <div class="product-media hidden" id="v-media"></div>
+    <label>粘贴原始英文脚本</label>
+    <textarea id="v-base" rows="6" placeholder="Paste your existing script here..."></textarea>
+    <div class="row2">
+      <div>
+        <label>变体方向</label>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px" id="v-checks">
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--color-text-primary);cursor:pointer;margin:0"><input type="checkbox" value="hook" checked> 换开头钩子</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--color-text-primary);cursor:pointer;margin:0"><input type="checkbox" value="cta" checked> 换结尾 CTA</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--color-text-primary);cursor:pointer;margin:0"><input type="checkbox" value="tone"> 调整语气</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--color-text-primary);cursor:pointer;margin:0"><input type="checkbox" value="audience"> 切换受众视角</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--color-text-primary);cursor:pointer;margin:0"><input type="checkbox" value="short"> 压缩为15秒版</label>
+        </div>
+      </div>
+      <div>
+        <label>生成数量</label>
+        <select id="v-count"><option value="2">2个变体</option><option value="3" selected>3个变体</option><option value="5">5个变体</option></select>
+      </div>
+    </div>
+    <div class="compliance-note">⚠️ 合规提醒：变体生成保留合规叙事方式，规避液体/身体特写等限流风险。</div>
+    <button class="gen-btn" id="btn-variant" onclick="generate('variant')">生成变体</button>
+    <div class="output-area" id="out-variant">
+      <div class="output-header"><span class="output-label">生成结果</span><span class="output-meta" id="meta-variant"></span><button class="copy-btn" onclick="copyOut('variant')">复制</button></div>
+      <div class="output-content" id="out-variant-text"></div>
+    </div>
+  </div>
+
+  <!-- 本土化 -->
+  <div id="panel-localize" class="panel">
+    <label>产品 SKU（推荐，用于调用项目术语）</label>
+    <select id="l-sku"></select>
+    <div class="product-note hidden" id="l-knowledge"></div>
+    <div class="product-media hidden" id="l-media"></div>
+    <div class="row3">
+      <div>
+        <label>目标市场</label>
+        <select id="l-market"><option value="US (American English, imperial units)">🇺🇸 美国</option><option value="UK (British English, metric units)">🇬🇧 英国</option><option value="Australia (Australian English, metric)">🇦🇺 澳大利亚</option><option value="Germany (English content for German TikTok)">🇩🇪 德国</option><option value="Southeast Asia (casual English)">🌏 东南亚</option></select>
+      </div>
+      <div>
+        <label>输出内容</label>
+        <select id="l-type"><option value="script localization">脚本本土化</option><option value="video caption + title">标题 + 文案</option><option value="TikTok hashtags">话题标签</option><option value="full package: script + caption + hashtags">全套</option></select>
+      </div>
+      <div>
+        <label>语气风格</label>
+        <select id="l-tone"><option value="casual and friendly">口语 / 亲切</option><option value="professional and trustworthy">专业 / 信任感</option><option value="emotional and empathetic">情感共鸣</option><option value="light and humorous">幽默轻松</option></select>
+      </div>
+    </div>
+    <label>原始脚本 / 文案</label>
+    <textarea id="l-input" rows="7" placeholder="Paste your script or caption here..."></textarea>
+    <div class="compliance-note">⚠️ 合规提醒：本土化时同步检查目标市场平台审核偏好，敏感词自动替换为当地更安全的表达。</div>
+    <button class="gen-btn" id="btn-localize" onclick="generate('localize')">本土化处理</button>
+    <div class="output-area" id="out-localize">
+      <div class="output-header"><span class="output-label">生成结果</span><span class="output-meta" id="meta-localize"></span><button class="copy-btn" onclick="copyOut('localize')">复制</button></div>
+      <div class="output-content" id="out-localize-text"></div>
+    </div>
+  </div>
+
+  <!-- 剪辑指令 tab — 唯一改动区域 -->
+  <div id="panel-editor" class="panel">
+
+    <!-- 输出类型切换（新增） -->
+    <label style="margin-bottom:6px">输出类型</label>
+    <div class="outtype-tabs">
+      <div class="outtype-tab active" id="ot-sop" onclick="switchOuttype('sop')">🎬 剪辑师 SOP（CapCut）</div>
+      <div class="outtype-tab" id="ot-vo" onclick="switchOuttype('vo')">🎙️ 配音脚本（ElevenLabs）</div>
+    </div>
+
+    <!-- 工具推荐（两种模式共用，文案随模式切换） -->
+    <div class="tool-rec" id="tool-rec-text">
+      ✅ 真正可自动化的工具：<strong>OpusClip</strong>（长视频自动切片）、<strong>Pictory</strong>（脚本转视频）、<strong>Runway Gen-3</strong>（AI素材生成）。以下输出为给人工剪辑师执行的 SOP 文档。
+    </div>
+
+    <label>产品 SKU（推荐，用于调用项目卖点与镜头语言）</label>
+    <select id="e-sku"></select>
+    <div class="product-note hidden" id="e-knowledge"></div>
+    <div class="product-media hidden" id="e-media"></div>
+
+    <!-- SOP 专属字段 -->
+    <div id="sop-fields">
+      <div class="row2" style="margin-top:10px">
+        <div>
+          <label>视频场景</label>
+          <select id="e-scene"><option value="product showcase / feature demo">产品展示 / 功能演示</option><option value="talking head UGC">真人出镜口播</option><option value="B-roll lifestyle footage">B-Roll 生活场景</option><option value="before/after (no graphic liquid visuals)">前后对比</option><option value="unboxing">开箱视频</option></select>
+          <label>字幕风格</label>
+          <select id="e-sub"><option value="clean white subtitles, centered bottom">简洁白色居中</option><option value="bold yellow emphasis captions">粗体黄色强调</option><option value="TikTok karaoke word-by-word highlight">TikTok 卡拉OK逐字</option><option value="minimal borderless text">极简无边框</option></select>
+        </div>
+        <div>
+          <label>BGM 风格</label>
+          <select id="e-bgm"><option value="upbeat and energetic">轻快活力</option><option value="warm and emotional (caregiving / maternal)">温情治愈</option><option value="currently trending TikTok sound">TikTok 流行音效</option><option value="voiceover only, no music">纯人声 / 无音乐</option></select>
+          <label>转场风格</label>
+          <select id="e-trans"><option value="hard cut (fast-paced)">无缝直切</option><option value="fade in/out (soft)">淡入淡出</option><option value="zoom push">缩放推进</option><option value="whip pan transition">甩动转场</option></select>
+        </div>
+      </div>
+    </div>
+
+    <!-- 配音脚本专属字段（新增） -->
+    <div id="vo-fields" class="hidden">
+      <div class="row2" style="margin-top:10px">
+        <div>
+          <label>目标语言 / 口音</label>
+          <select id="e-vo-lang">
+            <option value="American English (US accent)">🇺🇸 美式英语</option>
+            <option value="British English (UK accent)">🇬🇧 英式英语</option>
+            <option value="Australian English">🇦🇺 澳洲英语</option>
+            <option value="Southeast Asian English (clear and neutral)">🌏 东南亚英语</option>
+          </select>
+          <label>语速</label>
+          <select id="e-vo-pace">
+            <option value="natural conversational pace (~150 wpm)">自然口语（~150词/分）</option>
+            <option value="slightly slower for clarity (~130 wpm)">稍慢清晰（~130词/分）</option>
+            <option value="energetic and fast (~170 wpm)">活力快速（~170词/分）</option>
+          </select>
+        </div>
+        <div>
+          <label>情绪风格</label>
+          <select id="e-vo-emotion">
+            <option value="warm and empathetic">温暖共情</option>
+            <option value="upbeat and enthusiastic">活力热情</option>
+            <option value="calm and trustworthy">沉稳可信</option>
+            <option value="friendly and conversational">轻松随意</option>
+          </select>
+          <label>变体数量</label>
+          <select id="e-vo-variants">
+            <option value="1">1个（单版本）</option>
+            <option value="3" selected>3个（批量测试）</option>
+            <option value="5">5个（完整A/B组）</option>
+          </select>
+        </div>
+      </div>
+      <div class="vo-note">
+        📋 <strong>使用流程：</strong>复制输出内容 → 打开 ElevenLabs → Projects 或 Speech Synthesis → 粘贴文本 → 按推荐参数设置声音 → 批量导出 MP3 → 导入 CapCut 替换原配音轨
+      </div>
+    </div>
+
+    <!-- 分镜/脚本（两种模式共用） -->
+    <label id="script-label" style="margin-top:10px">分镜 / 脚本（可选）</label>
+    <textarea id="e-script" rows="4" placeholder="例：&#10;0-3s: 特写产品包装&#10;3-8s: 使用场景演示&#10;8-15s: 结果展示 + CTA"></textarea>
+
+    <button class="gen-btn" id="btn-editor" onclick="generate('editor')">生成剪辑 SOP</button>
+
+    <div class="output-area" id="out-editor">
+      <div class="output-header">
+        <span class="output-label" id="out-editor-label">剪辑师 SOP</span>
+        <span class="output-meta" id="meta-editor"></span>
+        <button class="copy-btn" onclick="copyOut('editor')">复制</button>
+      </div>
+      <div class="output-content" id="out-editor-text"></div>
+    </div>
+  </div>
+
+  <!-- 扩展产品 -->
+  <div id="panel-extension" class="panel">
+    <div class="ext-panel">
+      <div class="ext-grid">
+        <div>
+          <label>产品英文名 / 外部 SKU 名</label>
+          <input class="text-input" id="x-name" type="text" placeholder="例：Bamboo Nursing Pads">
+          <label>产品中文名（可选）</label>
+          <input class="text-input" id="x-cn" type="text" placeholder="例：竹纤维乳垫">
+          <label>产品系列</label>
+          <select id="x-family">
+            <option value="成人护理">成人护理</option>
+            <option value="宠物护理">宠物护理</option>
+            <option value="母婴护理">母婴护理</option>
+            <option value="女性护理">女性护理</option>
+            <option value="护理垫">护理垫</option>
+            <option value="扩展产品">扩展产品</option>
+          </select>
+          <label>产品定位 / 品类描述</label>
+          <textarea id="x-category" rows="4" placeholder="例：disposable bamboo nursing pad for breastfeeding moms who want softer skin feel and discreet daytime protection"></textarea>
+        </div>
+        <div>
+          <label>核心人群</label>
+          <textarea id="x-audience" rows="3" placeholder="例：哺乳期妈妈、通勤泵奶用户、待产包准备用户"></textarea>
+          <label>核心场景</label>
+          <textarea id="x-scenes" rows="3" placeholder="例：日常哺乳、泵奶通勤、外出社交、夜间备用"></textarea>
+          <label>已有卖点 / 参数 / 认证</label>
+          <textarea id="x-points" rows="3" placeholder="例：独立包装、超薄隐形、无香、通过皮肤测试、36片/盒"></textarea>
+          <label>补充说明（可选）</label>
+          <textarea id="x-notes" rows="3" placeholder="例：想重点强调环保感、礼盒感、适合做TikTok种草"></textarea>
+        </div>
+      </div>
+
+      <label>上传参考图片（可多张）</label>
+      <input id="x-images" type="file" accept="image/*" multiple>
+      <div class="field-note">系统会把上传图片和识别出的文字特征一起喂给 AI。保存后，这些图片也会绑定到新产品，后续在前面几个 tab 中自动调用。</div>
+      <div class="preview-wrap hidden" id="x-previews"></div>
+
+      <div class="ext-actions">
+        <button class="gen-btn" id="btn-extension-generate" onclick="generateExtensionProduct()">生成产品卖点文案</button>
+        <button class="secondary-btn" id="btn-extension-save" onclick="saveExtensionProduct()" disabled>保存到产品库</button>
+      </div>
+      <div class="field-note" id="x-save-status">生成后可以一键保存，保存后的新产品会自动进入前面几个 SKU 下拉。</div>
+    </div>
+
+    <div class="product-note hidden" id="x-draft-summary"></div>
+    <div class="saved-products hidden" id="x-saved-products"></div>
+
+    <div class="github-box">
+      <h3>GitHub 仓库同步</h3>
+      <div class="ext-grid">
+        <div>
+          <label>仓库</label>
+          <input class="text-input" id="gh-repo" type="text" placeholder="例：yourname/your-repo">
+          <label>分支</label>
+          <input class="text-input" id="gh-branch" type="text" placeholder="main">
+        </div>
+        <div>
+          <label>目录</label>
+          <input class="text-input" id="gh-folder" type="text" placeholder="例：tk-content-workbench-data">
+          <label>GitHub Token</label>
+          <input class="text-input" id="gh-token" type="password" placeholder="ghp_...">
+        </div>
+      </div>
+      <div class="field-note">会同步三类数据到仓库：`custom-products.json`、`generation-history.json`、以及扩展产品上传的图片文件。Token 需要有仓库 contents 写权限。</div>
+      <div class="github-actions">
+        <button class="gen-btn" id="btn-github-sync" onclick="syncToGitHub()">同步到 GitHub</button>
+        <button class="secondary-btn" id="btn-github-save" onclick="saveGitHubSettings()">保存仓库配置</button>
+      </div>
+      <div class="github-status" id="gh-status">还没有执行 GitHub 同步。仓库配置会保存在当前浏览器，方便下次继续同步。</div>
+
+      <div class="github-actions" style="margin-top:12px">
+        <button class="secondary-btn" onclick="exportWorkbenchData()">导出工具数据</button>
+        <button class="secondary-btn" onclick="document.getElementById('import-state-file').click()">导入工具数据</button>
+      </div>
+      <input id="import-state-file" type="file" accept="application/json" class="hidden">
+      <div class="field-note">如果你要把工具交给别人，可以把 `html + assets 文件夹 + 导出的 json` 一起发给对方。对方导入后就能拿到扩展产品库和生成历史。</div>
+    </div>
+
+    <div class="output-area" id="out-extension">
+      <div class="output-header"><span class="output-label">扩展产品档</span><span class="output-meta" id="meta-extension"></span><button class="copy-btn" onclick="copyOut('extension')">复制</button></div>
+      <div class="output-content" id="out-extension-text"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const COMPLIANCE=`CRITICAL COMPLIANCE RULES for TikTok hygiene/incontinence/period product content:
+- Never describe or suggest showing liquid leakage, bodily fluids, or close-up body parts
+- Avoid words: "leak","wet","soaked","blood","discharge","urine" — use euphemisms such as "unexpected moments","protection","stay dry","confidence"
+- Focus on emotional benefits, lifestyle, confidence, cleanliness, and comfort — not medical symptoms
+- No before/after visuals involving fluids
+- Use soft, lifestyle-oriented framing throughout`;
+
+const MODEL_COSTS={"gpt-4o":"约 $0.01–0.02 / 次","gpt-4o-mini":"约 $0.001–0.002 / 次"};
+const TEMPERATURES={script:0.65,variant:0.75,localize:0.45,editor:0.55,extension:0.5};
+let currentOuttype="sop";
+
+const PRODUCT_LIBRARY={
+  adult_tabs:{
+    englishName:"Adult Diaper with Tabs",
+    chineseName:"成人搭扣纸尿裤",
+    label:"Adult Diaper with Tabs（成人搭扣纸尿裤）",
+    optionLabel:"成人护理 · Adult Diaper with Tabs",
+    positioningZh:"成人护理 / 搭扣纸尿裤",
+    category:"tab-style adult diaper for moderate-to-heavy incontinence care",
+    audienceSummaryZh:"老人照护者、失禁用户本人、术后恢复家庭",
+    audienceSummaryEn:"caregivers, adults with moderate-to-heavy incontinence, and post-surgery home-care families",
+    audiences:[
+      {label:"老人照护者",value:"adult children or professional caregivers supporting seniors who need dignified, easier changes"},
+      {label:"失禁用户本人",value:"adults managing moderate-to-heavy incontinence who want discreet day-to-night security"},
+      {label:"术后恢复家庭",value:"families supporting post-surgery or limited-mobility recovery at home"}
+    ],
+    defaultAudienceIndex:0,
+    scenariosZh:["夜间护理","术后恢复","行动不便护理","长时穿戴"],
+    scenariosEn:["overnight care","post-surgery recovery","limited-mobility support","extended day-to-night wear"],
+    keyPointsZh:["透气面层适合长时穿戴","强吸收芯体配合腿围防护更安心","搭扣调节与大臀围覆盖更贴合","除味保持体面感"],
+    keyPointsEn:["breathable back sheet supports long-wear comfort","super absorbent core plus leak guards help with day and night security","secure-fit tabs and larger hip coverage improve fit","odor control supports discreet care routines"],
+    specs:"M/L/XL; 10 count per pack",
+    proof:"Dermatologically tested; FDA registered",
+    vocabulary:["discreet protection","secure-fit tabs","overnight confidence","caregiver-friendly changing","long-wear comfort"],
+    creativeAngles:["dignity-first caregiving","overnight peace of mind","secure fit without tightness"],
+    safeScenes:["packaging and texture close-up","tab adjustment on a clothed mannequin or over clothing","bedtime routine or chair-to-stand moment","caregiver handoff or bedside setup"],
+    focus:"Speak to dignity, ease of changing, and reliable overnight coverage instead of generic softness claims.",
+    focusZh:"重点讲护理体面感、换护便利和夜间安心，不要泛泛夸“高端柔软”。"
+  },
+  disposable_briefs:{
+    englishName:"Disposable Briefs",
+    chineseName:"成人拉拉裤",
+    label:"Disposable Briefs（成人拉拉裤）",
+    optionLabel:"成人护理 · Disposable Briefs",
+    positioningZh:"成人护理 / 拉拉裤",
+    category:"pull-up protective underwear for adults who want easier self-wear and day-to-night absorbent protection",
+    audienceSummaryZh:"失禁用户本人、长辈日常穿戴用户、术后恢复家庭",
+    audienceSummaryEn:"adults managing incontinence directly, seniors wanting easier pull-on wear, and post-surgery home-care users",
+    audiences:[
+      {label:"失禁用户本人",value:"adults who prefer underwear-style protection they can pull on by themselves"},
+      {label:"长辈日常穿戴用户",value:"senior users who want a regular-underwear feel with stronger absorbent backup"},
+      {label:"术后恢复家庭",value:"families supporting post-surgery or reduced-mobility users who need easier change routines"}
+    ],
+    defaultAudienceIndex:0,
+    scenariosZh:["白天日常穿戴","行动自理场景","术后恢复","夜间备用"],
+    scenariosEn:["daily wear","self-managed routines","post-surgery recovery","overnight backup"],
+    keyPointsZh:["内裤式穿脱更方便","高吸收芯体维持长时干爽","除味控制更有体面感","弹力腰围活动更自在","一次性使用更卫生省心"],
+    keyPointsEn:["pull-up underwear styling makes wear easier","maximum absorbency supports longer-lasting dryness","odor control helps users feel fresher throughout the day","stretch waistband moves more comfortably with the body","disposable format adds hygiene and convenience"],
+    specs:"M/L/XL; 18 count per pack",
+    proof:"Dermatologically tested; FDA registered",
+    vocabulary:["pull-up protection","underwear-style fit","easy self-wear","day-to-night absorbency","odor-control confidence"],
+    creativeAngles:["looks more like regular underwear","easier for self-managed care","comfortable protection that moves with you"],
+    safeScenes:["pull-up silhouette next to regular underwear","waistband stretch close-up","walking or seated movement scene in clothing","bedside or bathroom shelf setup"],
+    focus:"Sell the ease and dignity of underwear-style wear. It should feel more independent and less clinical than tab diapers.",
+    focusZh:"这款的差异点是“像内裤一样好穿脱”，要写出自理感和体面感。"
+  },
+  men_pads:{
+    englishName:"Incontinence Pads for Men",
+    chineseName:"男士失禁护垫",
+    label:"Incontinence Pads for Men（男士失禁护垫）",
+    optionLabel:"成人护理 · Incontinence Pads for Men",
+    positioningZh:"成人护理 / 男士失禁护垫",
+    category:"male bladder-control pad for light daily protection inside regular underwear",
+    audienceSummaryZh:"轻度失禁男性、长辈男士、术后恢复用户",
+    audienceSummaryEn:"senior men, mild incontinence users, and post-op recovery users",
+    audiences:[
+      {label:"轻度失禁男性",value:"men managing mild bladder-control moments who want discreet daily backup"},
+      {label:"长辈男士",value:"senior men who want secure protection inside regular underwear without bulk"},
+      {label:"术后恢复用户",value:"post-op users needing light, comfortable support during recovery"}
+    ],
+    defaultAudienceIndex:0,
+    scenariosZh:["日常通勤","轻度防护","术后恢复","久坐场景"],
+    scenariosEn:["daily errands and commuting","light protection","post-surgery recovery","extended seated wear"],
+    keyPointsZh:["瞬吸锁水保持干爽","除味控制更有信心","透气亲肤长时间更舒适","背胶固定不移位"],
+    keyPointsEn:["instant absorption helps keep the surface dry","odor control supports confidence throughout the day","breathable skin-friendly structure stays comfortable over time","adhesive backing helps keep the pad in place inside regular underwear"],
+    specs:"260 mm; 50 count per pack",
+    proof:"Dermatologically tested; FDA registered",
+    vocabulary:["discreet daily backup","adhesive backing","inside regular underwear","stay-in-place protection","light-profile comfort"],
+    creativeAngles:["invisible confidence for daily wear","stays put inside regular underwear","fresh-feeling backup without bulk"],
+    safeScenes:["pad profile close-up","placement inside folded underwear","desk-to-errand routine","pack shot with size callout"],
+    focus:"Make the product feel discreet, practical, and male-specific instead of using generic feminine-care language.",
+    focusZh:"要突出男士专用、贴身不移位和低存在感，避免写成泛女性护理口吻。"
+  },
+  postpartum_pads:{
+    englishName:"Maxi Postpartum Pads",
+    chineseName:"产后加厚护理垫",
+    label:"Maxi Postpartum Pads（产后加厚护理垫）",
+    optionLabel:"成人护理 · Maxi Postpartum Pads",
+    positioningZh:"成人护理 / 产后护理垫",
+    category:"large-format postpartum recovery pad for gentle, secure absorbent support",
+    audienceSummaryZh:"产后妈妈、待产包准备家庭、术后恢复用户",
+    audienceSummaryEn:"postpartum moms, hospital-bag planners, and users needing gentle post-op absorbent care",
+    audiences:[
+      {label:"产后妈妈",value:"postpartum moms in the first days or weeks after birth who need soft, secure recovery support"},
+      {label:"待产包准备家庭",value:"families building a hospital bag and postpartum recovery kit"},
+      {label:"术后恢复用户",value:"post-surgery users needing gentle, fragrance-free, stay-put absorbent padding"}
+    ],
+    defaultAudienceIndex:0,
+    scenariosZh:["产后恢复","医院待产包","夜间护理","术后恢复"],
+    scenariosEn:["postpartum recovery","hospital bag prep","nighttime support","post-surgery recovery"],
+    keyPointsZh:["敏感肌友好更温和","无香精无染料更安心","易撕离型纸贴合不移位","透气面料长时间更舒适"],
+    keyPointsEn:["gentle on sensitive skin","fragrance-free and dye-free for safer recovery care","easy-tear release paper and secure fit help the pad stay in place","breathable fabric supports all-day comfort"],
+    specs:"17.5 x 6.3 in (44.5 x 16 cm); 25 count per pack",
+    proof:"Dermatologically tested; FDA registered",
+    vocabulary:["postpartum recovery","hospital-bag essential","gentle recovery comfort","stay-put coverage","fragrance-free care"],
+    creativeAngles:["softer recovery routines","hospital-bag readiness","gentle secure comfort for long rests"],
+    safeScenes:["hospital bag flat lay","recovery basket and bedside setup","soft material close-up","bedtime recovery routine without body exposure"],
+    focus:"Use recovery-friendly language built around softness, security, and practical preparation rather than aggressive performance claims.",
+    focusZh:"用产后恢复语境去写，强调温和、安全和待产包准备感，不要硬卖功能参数。"
+  },
+  calabash_postpartum_pads:{
+    englishName:"Calabash-Shaped Postpartum Pads",
+    chineseName:"葫芦型产后护理垫",
+    label:"Calabash-Shaped Postpartum Pads（葫芦型产后护理垫）",
+    optionLabel:"成人护理 · Calabash-Shaped Postpartum Pads",
+    positioningZh:"成人护理 / 葫芦型产后护理垫",
+    category:"calabash-shaped postpartum pad designed for secure fit, gentle care, and easier overnight recovery support",
+    audienceSummaryZh:"产后恢复女性、注重贴合度用户、夜间护理用户",
+    audienceSummaryEn:"postpartum women, users prioritizing shaped fit, and recovery routines needing gentler overnight support",
+    audiences:[
+      {label:"产后恢复女性",value:"postpartum women who want secure, gentle support during recovery"},
+      {label:"注重贴合度用户",value:"users who want a shaped pad that feels more stable during rest or movement"},
+      {label:"夜间护理用户",value:"women preparing a safer, more breathable overnight recovery routine"}
+    ],
+    defaultAudienceIndex:0,
+    scenariosZh:["产后恢复","夜间护理","轻度日常防护","居家长时间休息"],
+    scenariosEn:["postpartum recovery","night use","light daily backup","extended rest at home"],
+    keyPointsZh:["葫芦型更贴合身体曲线","敏感肌友好更温和","无香无染更安心","离型纸设计更方便贴合","透气面料减轻闷感"],
+    keyPointsEn:["shaped design supports a more secure fit","gentle-on-sensitive-skin positioning suits recovery care","fragrance-free and dye-free construction feels safer","easy-tear release paper supports easier application","breathable fabric helps reduce stuffiness"],
+    specs:"14.9 x 7.5 in (38 x 19 cm); 26 count per pack",
+    proof:"Dermatologically tested; FDA registered",
+    vocabulary:["shaped postpartum pad","secure recovery fit","gentle recovery care","overnight postpartum backup","breathable comfort"],
+    creativeAngles:["better fit for recovery routines","gentle shaped comfort","night-ready postpartum support"],
+    safeScenes:["recovery kit flat lay","shape comparison graphic","soft material close-up","bedside postpartum essentials setup"],
+    focus:"Differentiate this SKU by fit and body-contour support rather than only by softness or absorbency.",
+    focusZh:"这款要重点讲版型贴合和恢复期稳定感，不能只重复“温和透气”。"
+  },
+  women_pads:{
+    englishName:"Women's Incontinence Pads",
+    chineseName:"女性失禁护垫",
+    label:"Women's Incontinence Pads（女性失禁护垫）",
+    optionLabel:"成人护理 · Women's Incontinence Pads",
+    positioningZh:"成人护理 / 女性失禁护垫",
+    category:"women's bladder-control pad for light-to-moderate backup and postpartum support",
+    audienceSummaryZh:"产后女性、轻中度失禁女性、银发女性",
+    audienceSummaryEn:"postpartum women, mild-to-moderate incontinence users, and senior women",
+    audiences:[
+      {label:"产后女性",value:"postpartum women who want breathable, discreet backup for daily recovery"},
+      {label:"轻中度失禁女性",value:"women managing light-to-moderate bladder-control moments who want thin but reliable protection"},
+      {label:"银发女性",value:"senior women seeking comfortable daily confidence without bulky products"}
+    ],
+    defaultAudienceIndex:0,
+    scenariosZh:["日常轻防护","产后恢复","夜间加长防护","通勤穿戴"],
+    scenariosEn:["daily backup","postpartum care","longer nighttime protection","commuting and errands"],
+    keyPointsZh:["亲肤透气更清爽","瞬吸锁水更干爽","侧边护围更安心","轻薄隐形活动更自在"],
+    keyPointsEn:["skin-friendly breathable structure stays fresh","instant absorption helps with long-lasting dryness","upgraded side barriers add security","thin discreet profile supports easy movement"],
+    specs:"185 mm or 280 mm; 48 or 36 count per pack",
+    proof:"Dermatologically tested; FDA registered",
+    vocabulary:["discreet daily confidence","thin-profile protection","breathable comfort","reinforced side barriers","postpartum-friendly backup"],
+    creativeAngles:["thin but secure protection","daily confidence without bulk","breathable comfort for longer wear"],
+    safeScenes:["slim pad profile close-up","work bag or purse carry shot","daily outfit confidence scene","packaging plus size/length comparison"],
+    focus:"Keep the copy discreet, breathable, and confidence-led instead of sounding clinical or alarmist.",
+    focusZh:"内容要偏轻薄、透气、安心感，别写成夸张医疗口径。"
+  },
+  activated_charcoal_underpads:{
+    englishName:"Activated Charcoal Underpads",
+    chineseName:"活性炭隔尿垫",
+    label:"Activated Charcoal Underpads（活性炭隔尿垫）",
+    optionLabel:"宠物/护理垫 · Activated Charcoal Underpads",
+    positioningZh:"护理垫 / 活性炭除味隔尿垫",
+    category:"odor-control underpad with activated charcoal for beds, chairs, and high-odor care settings",
+    audienceSummaryZh:"家庭护理者、异味敏感家庭、宠物/老人失禁护理用户",
+    audienceSummaryEn:"caregivers, odor-sensitive households, and users managing pet or senior incontinence spaces",
+    audiences:[
+      {label:"家庭护理者",value:"home caregivers who need stronger odor control in bed or chair protection routines"},
+      {label:"异味敏感家庭",value:"households sensitive to strong smells and looking for a cleaner-feeling room environment"},
+      {label:"宠物/老人护理用户",value:"pet owners or senior-care families needing dependable surface protection with better odor management"}
+    ],
+    defaultAudienceIndex:0,
+    scenariosZh:["床椅防护","家庭护理","医院/护理机构","重异味场景"],
+    scenariosEn:["bed and chair protection","home care","medical or nursing settings","high-odor situations"],
+    keyPointsZh:["活性炭层主打强效除味","高吸收芯体锁住护理压力","防漏底膜保护床椅表面","亲肤面层减少不适感"],
+    keyPointsEn:["activated charcoal layer is positioned for stronger odor control","absorbent core helps manage demanding care situations","leak-proof backing protects beds and chairs","soft top sheet supports gentler contact"],
+    specs:"22 x 22 in or 28 x 34 in; 50 count per pack",
+    proof:"",
+    vocabulary:["activated charcoal layer","odor-control-first care","surface protection","bed and chair backup","cleaner room routine"],
+    creativeAngles:["odor-control-first positioning","cleaner room confidence","heavy-duty home care support"],
+    safeScenes:["bed or chair setup","charcoal-layer explainer graphic","care basket next to mattress or recliner","folded pad stack with size comparison"],
+    focus:"Lead with odor-control and surface-protection value for care environments, not generic absorbency hype.",
+    focusZh:"重点讲除味和床椅防护，适合护理场景，不要只写“吸收很好”这种泛描述。"
+  },
+  disposable_male_wraps:{
+    englishName:"Disposable Male Wraps",
+    chineseName:"公犬一次性包裹",
+    label:"Disposable Male Wraps（公犬一次性包裹）",
+    optionLabel:"宠物护理 · Disposable Male Wraps",
+    positioningZh:"宠物护理 / 公犬包裹",
+    category:"male dog wrap for marking management, in-home cleanliness, and light recovery support",
+    audienceSummaryZh:"养公犬家庭、标记行为管理用户、术后护理宠物主",
+    audienceSummaryEn:"male-dog households, owners managing marking behavior, and pet parents supporting recovery care",
+    audiences:[
+      {label:"养公犬家庭",value:"male dog owners who want an easier way to protect the home during indoor routines"},
+      {label:"标记行为管理用户",value:"pet parents managing marking behavior who need a wrap that stays comfortable on the belly"},
+      {label:"术后护理宠物主",value:"owners supporting post-surgery or senior-dog care who need soft, secure wrap protection"}
+    ],
+    defaultAudienceIndex:0,
+    scenariosZh:["居家防尿","标记行为管理","术后护理","外出使用"],
+    scenariosEn:["indoor protection","marking management","post-surgery support","travel or apartment routines"],
+    keyPointsZh:["快速吸收减少清洁压力","腹部接触柔软更舒适","包裹式结构更稳妥","轻量设计不影响活动"],
+    keyPointsEn:["quick absorption supports cleaner indoor routines","soft belly-facing material feels gentler","wrap-around design aims for a more secure fit","lightweight construction helps dogs move more freely"],
+    specs:"XS/S/M/L; 50 count per pack",
+    proof:"",
+    vocabulary:["male dog wrap","belly comfort","marking management","household cleanliness","lightweight fit"],
+    creativeAngles:["cleaner home with less stress","comfortable belly fit for daily wear","secure wrap for movement and travel"],
+    safeScenes:["belly measurement or wrap-prep scene","side-view wrap fit on a dog","clean floor or sofa protection context","travel bag or apartment-living setup"],
+    focus:"Frame it as a pet-owner convenience and cleanliness solution, with comfort and fit language that feels specific to male dogs.",
+    focusZh:"要从宠物主的清洁便利和公犬腹部贴合去写，别写成普通宠物尿垫的泛文案。"
+  },
+  disposable_diapers:{
+    englishName:"Disposable Diapers",
+    chineseName:"宠物纸尿裤",
+    label:"Disposable Diapers（宠物纸尿裤）",
+    optionLabel:"宠物护理 · Disposable Diapers",
+    positioningZh:"宠物护理 / 宠物纸尿裤",
+    category:"disposable pet diaper for male or female dogs during incontinence, heat cycles, marking, or recovery care",
+    audienceSummaryZh:"养猫狗家庭、发情期管理用户、老年宠物和术后护理家庭",
+    audienceSummaryEn:"pet households managing heat cycles, incontinence, marking behavior, or post-surgery care",
+    audiences:[
+      {label:"发情期管理用户",value:"pet owners managing female dogs in heat who want cleaner home routines"},
+      {label:"老年宠物护理家庭",value:"families caring for senior pets with incontinence or mobility changes"},
+      {label:"术后恢复家庭",value:"owners supporting recovery after surgery who need comfortable, secure pet protection"}
+    ],
+    defaultAudienceIndex:0,
+    scenariosZh:["发情期管理","失禁护理","居家长时穿戴","出行备用"],
+    scenariosEn:["heat-cycle management","incontinence care","extended indoor wear","travel backup"],
+    keyPointsZh:["高效吸收减少返湿感","透气外层更舒适","除味帮助维持家里清新感","可调贴片和弹力腰围更贴合","腿围防护减少意外弄脏"],
+    keyPointsEn:["high-efficiency absorbency helps keep the surface drier","breathable outer layer improves comfort over time","odor control supports a fresher home environment","adjustable tabs and stretchy waistband improve the fit","leg-opening protection helps reduce mess escaping"],
+    specs:"XS/S/M/L; 32 count per pack",
+    proof:"Dermatologically tested",
+    vocabulary:["pet diaper","heat-cycle management","odor-control pet care","adjustable tabs","secure customized fit"],
+    creativeAngles:["cleaner home during pet recovery","better fit for all-day pet care","odor-control support for indoor routines"],
+    safeScenes:["fit adjustment on a clothed or naturally posed dog","pet bed or sofa protection context","travel bag and pet-care kit","packaging with size callouts"],
+    focus:"Keep it pet-owner practical: fit, odor control, and home cleanliness matter more than generic softness claims.",
+    focusZh:"这款要讲宠物主最在意的清洁、贴合和除味，不要空泛写“很舒服”。"
+  },
+  disposable_diapers_tail_hole:{
+    englishName:"Disposable Diapers with Tail Hole",
+    chineseName:"带尾孔宠物纸尿裤",
+    label:"Disposable Diapers with Tail Hole（带尾孔宠物纸尿裤）",
+    optionLabel:"宠物护理 · Disposable Diapers with Tail Hole",
+    positioningZh:"宠物护理 / 带尾孔宠物纸尿裤",
+    category:"pet diaper with tail-hole fit emphasis for more natural wear comfort and secure movement",
+    audienceSummaryZh:"追求贴合度的宠物家庭、长时间外出用户、术后护理家庭",
+    audienceSummaryEn:"pet households prioritizing tail-area comfort, all-day fit, and more natural movement during care wear",
+    audiences:[
+      {label:"追求贴合度的宠物家庭",value:"pet owners who care about a more natural tail-area fit and comfort"},
+      {label:"长时间外出用户",value:"owners who need a diaper that feels more stable during longer outings"},
+      {label:"术后护理家庭",value:"families supporting recovery and wanting a more comfortable secure pet diaper fit"}
+    ],
+    defaultAudienceIndex:0,
+    scenariosZh:["长时外出","日常防护","术后护理","发情期使用"],
+    scenariosEn:["longer outings","daily protection","post-surgery recovery","heat-cycle wear"],
+    keyPointsZh:["尾孔设计更自然贴合","高吸收减少返湿和外漏压力","透气结构减轻闷感","除味维持环境清爽","更适合活动中的稳定穿戴"],
+    keyPointsEn:["tail-hole design supports a more natural comfortable fit","high-efficiency absorbency helps reduce rewet and leakage pressure","breathable structure reduces stuffiness","odor locking helps keep the area fresher","fit positioning is better suited to movement"],
+    specs:"XS/S/M/L; 32 count per pack",
+    proof:"Dermatologically tested",
+    vocabulary:["tail-hole fit","natural pet movement","comfortable pet diaper wear","secure pet fit","odor-locking care"],
+    creativeAngles:["more natural fit around the tail","comfort-first pet diapering","stable wear for movement and outings"],
+    safeScenes:["tail-hole feature close-up on packaging or product","side and back fit illustration","walking or standing pet scene","travel or veterinary-care prep setup"],
+    focus:"Differentiate this SKU by tail-area fit and movement comfort. That is the specialist reason to choose it.",
+    focusZh:"这款专业点在尾孔贴合和活动舒适度，要把这个差异点说透。"
+  },
+  training_pads:{
+    englishName:"Training Pads",
+    chineseName:"宠物训练尿垫",
+    label:"Training Pads（宠物训练尿垫）",
+    optionLabel:"宠物护理 · Training Pads",
+    positioningZh:"宠物护理 / 训练尿垫",
+    category:"pet training pad for indoor potty training, senior-dog care, and cleaner household routines",
+    audienceSummaryZh:"幼犬家庭、室内如厕训练用户、注重家居清洁的养宠家庭",
+    audienceSummaryEn:"puppy households, indoor potty-training users, and pet owners prioritizing a cleaner home",
+    audiences:[
+      {label:"幼犬家庭",value:"new puppy owners training indoor potty habits"},
+      {label:"室内如厕训练用户",value:"pet owners who need a cleaner indoor elimination routine when going outside is difficult"},
+      {label:"老年宠物护理家庭",value:"families caring for senior dogs who need dependable absorbent floor protection"}
+    ],
+    defaultAudienceIndex:0,
+    scenariosZh:["室内如厕训练","临时看护","老年宠物护理","公寓养宠"],
+    scenariosEn:["indoor potty training","temporary care routines","senior-dog support","apartment pet living"],
+    keyPointsZh:["防漏底层守住地板清洁","长效吸收减少返湿","亲肤表层更温和","加强底膜提升防漏安全感","帮助宠物主减轻清洁压力"],
+    keyPointsEn:["leak-proof backing protects floors and surfaces","long absorbent performance helps reduce rewet","top layer feels gentler on paws","improved backing increases leak defense","supports easier cleanup for pet owners"],
+    specs:"22 x 22 in (60 x 60 cm); 50 count per pack",
+    proof:"",
+    vocabulary:["puppy training pad","indoor potty routine","floor protection","quick-dry surface","clean-home pet care"],
+    creativeAngles:["less cleanup during puppy training","cleaner floors for indoor pet routines","reliable pad for apartment living"],
+    safeScenes:["pad placement on floor","puppy approaching or standing near the pad","home interior cleanliness scene","stacked pads next to pet supplies"],
+    focus:"This is a training and cleanliness SKU. Write for the owner's daily cleanup and house-training pressure.",
+    focusZh:"训练尿垫要从如厕训练和家务减负去写，不是宠物纸尿裤的语气。"
+  },
+  regular_underpads:{
+    englishName:"Regular Underpads",
+    chineseName:"标准隔尿垫",
+    label:"Regular Underpads（标准隔尿垫）",
+    optionLabel:"护理垫 · Regular Underpads",
+    positioningZh:"护理垫 / 标准隔尿垫",
+    category:"multi-surface disposable underpad for beds, chairs, wheelchairs, postpartum, and pet or elder care routines",
+    audienceSummaryZh:"老人护理家庭、宠物训练家庭、卧床护理用户",
+    audienceSummaryEn:"elder-care households, pet-training families, and users protecting beds, chairs, or furniture during care routines",
+    audiences:[
+      {label:"老人护理家庭",value:"caregivers protecting beds, chairs, or wheelchairs during daily incontinence care"},
+      {label:"宠物训练家庭",value:"pet owners wanting a versatile absorbent pad beyond standard potty training use"},
+      {label:"卧床护理用户",value:"families supporting extended rest or limited-mobility care and needing more surface protection"}
+    ],
+    defaultAudienceIndex:0,
+    scenariosZh:["床椅防护","轮椅或座椅垫用","宠物训练","家具保护"],
+    scenariosEn:["bed protection","chair or wheelchair use","pet training","furniture protection"],
+    keyPointsZh:["防漏底膜保护床椅表面","长效吸收延长干爽感","亲肤表层更温和","除味和干爽感更适合长期护理","多尺寸适配多场景"],
+    keyPointsEn:["leak-proof backing protects surfaces","extended absorbency supports longer-lasting dryness","skin-friendly surface feels gentler","dryness and odor-control positioning suit longer care routines","multiple sizes fit more use cases"],
+    specs:"22 x 22 in, 28 x 34 in, or 30 x 36 in; 50 count per pack",
+    proof:"",
+    vocabulary:["surface protection","bed and chair backup","multi-use underpad","extended dryness","versatile care pad"],
+    creativeAngles:["one pad for multiple care scenes","protect the bed, chair, or sofa","versatile backup for home care and pet routines"],
+    safeScenes:["bed corner or chair placement","sofa protection setup","wheelchair or recliner care kit","size comparison stack shot"],
+    focus:"Position this as a versatile surface-protection product for mixed care scenes, not just a pet or postpartum-only item.",
+    focusZh:"标准隔尿垫的专业点在多场景表面防护，要写出床、椅、家具这些使用面。"
+  },
+  lavender_underpads:{
+    englishName:"Lavender Disposable Underpads",
+    chineseName:"薰衣草香型隔尿垫",
+    label:"Lavender Disposable Underpads（薰衣草香型隔尿垫）",
+    optionLabel:"护理垫 · Lavender Disposable Underpads",
+    positioningZh:"护理垫 / 薰衣草香型隔尿垫",
+    category:"lavender-scented underpad for surface protection and gentler odor-neutralizing room routines",
+    audienceSummaryZh:"轻护理家庭、异味敏感家庭、宠物训练与家具防护用户",
+    audienceSummaryEn:"light-care households, odor-sensitive users, and families protecting beds or furniture during pet or recovery routines",
+    audiences:[
+      {label:"轻护理家庭",value:"families wanting a more pleasant-smelling room while handling everyday protection needs"},
+      {label:"宠物训练用户",value:"pet owners who want furniture protection with a softer, fresher positioning"},
+      {label:"恢复期护理用户",value:"caregivers preparing calmer bedroom or recovery-space routines"}
+    ],
+    defaultAudienceIndex:0,
+    scenariosZh:["床铺家具防护","宠物训练","夜间护理","出行防护"],
+    scenariosEn:["bed and furniture protection","pet training","overnight care","travel protection"],
+    keyPointsZh:["防漏底层保护表面","除味配合薰衣草气味更清新","高吸收芯体延长干爽感","柔软透气面层更温和"],
+    keyPointsEn:["leak-proof backing protects beds and furniture","odor-neutralizing positioning plus lavender scent supports a fresher room feel","ultra-absorbent core helps with extended protection","soft breathable top layer feels gentler"],
+    specs:"22 x 22 in or 28 x 34 in; 50 count per pack",
+    proof:"",
+    vocabulary:["lavender-scented care","fresh-feeling room","odor-neutralizing routine","surface protection","gentle care environment"],
+    creativeAngles:["fresher room atmosphere","comfort plus odor control","softer protection story for bedrooms and recovery spaces"],
+    safeScenes:["bedroom linen setup","lavender cue or scent story graphic","underpad placement under sheets","travel or guest-room care kit"],
+    focus:"Balance practical protection with a calmer room atmosphere; that scent-and-care angle is the true differentiator here.",
+    focusZh:"这款的差异点是“防护+空间气味体验”，要把薰衣草和护理氛围写出来。"
+  },
+  male_wraps_size:{
+    englishName:"Male Wraps - Pet Care Size",
+    chineseName:"公犬包裹尺码指南",
+    label:"Male Wraps - Pet Care Size（公犬包裹尺码指南）",
+    optionLabel:"宠物护理 · Male Wraps Size Guide",
+    positioningZh:"宠物护理 / 公犬包裹尺码指南",
+    category:"size-selection guidance for male dog wraps, centered on belly measurement and secure fit",
+    audienceSummaryZh:"首次购买用户、尺码犹豫用户、成长中公犬家庭",
+    audienceSummaryEn:"first-time buyers, owners between sizes, and households choosing wraps for growing male dogs",
+    audiences:[
+      {label:"首次购买用户",value:"first-time buyers who need a simple, reassuring way to choose the right male wrap size"},
+      {label:"尺码犹豫用户",value:"pet owners deciding between two sizes and wanting a secure but not tight fit"},
+      {label:"成长中公犬家庭",value:"families shopping for puppies or dogs whose waist measurement may change over time"}
+    ],
+    defaultAudienceIndex:0,
+    scenariosZh:["首次选码","腰围测量","防止滑落移位","出行前准备"],
+    scenariosEn:["first-purchase size selection","waist measurement","avoiding slipping or shifting","pre-travel prep"],
+    keyPointsZh:["XS-L 多尺码覆盖更多犬型","先量后选减少试错成本","合适包裹更稳固不易移位","选码教育内容更适合转化前种草"],
+    keyPointsEn:["XS-L sizing covers a broad range of male dogs","measure-before-you-buy guidance reduces guesswork","better fit supports stability and comfort","size education can remove hesitation before purchase"],
+    specs:"XS 9-14 in, S 12-19 in, M 18-25 in, L 23-30 in; 50 count per pack",
+    proof:"",
+    vocabulary:["size guide","measure belly girth","secure not tight fit","fit selection","first-purchase confidence"],
+    creativeAngles:["teach-before-you-sell","remove size hesitation","secure fit starts with correct measurement"],
+    safeScenes:["tape-measure demonstration around the belly","size chart graphic","side-by-side fit explanation","travel bag or first-order checklist"],
+    focus:"Use educational, fit-guide language. This SKU should sound like a buying guide, not a generic absorbency ad.",
+    focusZh:"这是选码型内容，重点是教育用户怎么量、怎么选，不是泛卖点广告。"
+  },
+  ultra_thin_baby_diapers:{
+    englishName:"Ultra Thin Baby Diapers",
+    chineseName:"超薄婴儿纸尿裤",
+    label:"Ultra Thin Baby Diapers（超薄婴儿纸尿裤）",
+    optionLabel:"母婴护理 · Ultra Thin Baby Diapers",
+    positioningZh:"母婴护理 / 超薄纸尿裤",
+    category:"ultra-thin baby diaper for all-day wear, dry nights, and active little ones",
+    audienceSummaryZh:"新手父母、夜间护理家庭、好动宝宝家庭",
+    audienceSummaryEn:"new parents, families prioritizing dry nights, and households with active babies",
+    audiences:[
+      {label:"新手父母",value:"new parents who want a lighter, more breathable diaper for everyday baby care"},
+      {label:"夜间护理家庭",value:"families prioritizing dry nights and uninterrupted sleep for babies and parents"},
+      {label:"好动宝宝家庭",value:"parents of crawling or walking babies who need thin comfort plus dependable leak defense"}
+    ],
+    defaultAudienceIndex:0,
+    scenariosZh:["全天穿戴","夜间安睡","外出旅行","爬行学步"],
+    scenariosEn:["all-day wear","overnight sleep","travel routines","crawling and first-step movement"],
+    keyPointsZh:["瞬吸锁水减少返渗","透气面层帮助减少闷热","3D 护围应对翻身跑跳","超薄轻盈穿着无负担","高弹腰围贴合不勒肚"],
+    keyPointsEn:["instant absorbent core helps lock moisture quickly","breathable top sheet helps release heat and humidity","3D leak barriers support rolling crawling and play","ultra-thin lightweight profile reduces bulk","elastic waistband fits snugly without feeling too tight"],
+    specs:"NB/S/M/L/XL/XXL; 26-48 pieces by size",
+    proof:"",
+    vocabulary:["ultra-thin comfort","dry-night support","breathable top sheet","3D leak barriers","lightweight daily wear"],
+    creativeAngles:["lighter daytime comfort","dry nights for better family sleep","leak defense for active babies"],
+    safeScenes:["mom opening pack and touching thin profile","waistband stretch close-up","baby crawling or rolling in clothing","bedtime change routine"],
+    focus:"Blend parenting reassurance with technical reasons to believe: thin profile, breathability, and movement-friendly leak protection.",
+    focusZh:"要把轻薄、透气、防漏和育儿场景结合起来，别只讲“宝宝舒服”。"
+  },
+  t_shape_training_pants:{
+    englishName:"T-Shape Training Pants",
+    chineseName:"T 型舒适训练裤",
+    label:"T-Shape Training Pants（T 型舒适训练裤）",
+    optionLabel:"母婴护理 · T-Shape Training Pants",
+    positioningZh:"母婴护理 / T 型训练裤",
+    category:"potty-training pants designed for stable wet fit, easy pull-up/down, and toddler independence",
+    audienceSummaryZh:"如厕训练家庭、幼儿园日间穿戴用户、外出训练用户",
+    audienceSummaryEn:"potty-training families, daycare routines, and parents training toddlers on the go",
+    audiences:[
+      {label:"如厕训练家庭",value:"parents teaching toddlers to use the toilet and looking for a more stable training-pants option"},
+      {label:"幼儿园日间穿戴用户",value:"families needing a secure daytime training pant that stays in place at daycare"},
+      {label:"外出训练用户",value:"parents who want easy pull-on and pull-off convenience for travel or outdoor potty-training routines"}
+    ],
+    defaultAudienceIndex:0,
+    scenariosZh:["如厕训练关键期","幼儿园日间穿戴","户外活动","夜间安睡","外出应急"],
+    scenariosEn:["potty-training stage","daycare wear","outdoor play","overnight support","travel backup"],
+    keyPointsZh:["湿态贴身不移位","锁水均匀不结团","快导流强吸收","裤型易穿易脱助力自主如厕","高弹柔边活动更自在"],
+    keyPointsEn:["stays close-fitting even when wet","locks moisture more evenly to reduce clumping","fast diversion plus strong absorbency supports dryness","easy pull-on and pull-off design helps teach toilet independence","soft elastic edges allow freer movement"],
+    specs:"L/XL/XXL/XXXL; 24-36 pieces by size",
+    proof:"",
+    vocabulary:["potty-training stage","easy up-and-down design","wet-fit stability","no clumping feel","independence-friendly routine"],
+    creativeAngles:["toilet-training confidence","stays stable even after use","pull-up convenience for on-the-go parents"],
+    safeScenes:["toddler hands pulling pants up","daycare bag pack-in shot","running or play scene","potty routine iconography without body exposure"],
+    focus:"Make independence and wet-fit stability the heroes. That is what separates training pants from regular diapers.",
+    focusZh:"训练裤要重点写“自主如厕”和“湿了也稳”，这才是专业差异点。"
+  },
+  q_shape_diaper_pants:{
+    englishName:"Q-Shape Diaper Pants",
+    chineseName:"Q 型优质拉拉裤",
+    label:"Q-Shape Diaper Pants（Q 型优质拉拉裤）",
+    optionLabel:"母婴护理 · Q-Shape Diaper Pants",
+    positioningZh:"母婴护理 / Q 型拉拉裤",
+    category:"pull-up diaper pants for active toddlers needing quick changes, soft touch, and full-wrap leak defense",
+    audienceSummaryZh:"好动宝宝家庭、追求快速更换家庭、幼儿园/出行家庭",
+    audienceSummaryEn:"families with active toddlers, parents wanting faster changes, and daycare or travel households",
+    audiences:[
+      {label:"好动宝宝家庭",value:"parents of active toddlers who need reliable protection during running jumping and rolling"},
+      {label:"快速更换家庭",value:"families who want a faster underwear-style pull-up for busy change moments"},
+      {label:"幼儿园/出行家庭",value:"parents needing an easy pull-up pant for daycare, travel, and all-day routines"}
+    ],
+    defaultAudienceIndex:0,
+    scenariosZh:["学步期全天穿戴","户外活动","夜间睡眠","幼儿园在校使用","长途旅行"],
+    scenariosEn:["all-day wear during first steps","outdoor play","overnight sleep","daycare routines","longer travel"],
+    keyPointsZh:["一体裤型更换更省时","动态全包边跑跳更安心","柔棉面层更亲肤","多层吸收芯体更干爽","360° 高弹腰围适配好动宝宝"],
+    keyPointsEn:["one-piece pull-up design speeds up changes","dynamic full-wrap leak protection helps during active movement","soft cotton surface feels gentler on skin","multi-layer absorbent core helps with long-lasting dryness","360-degree stretchy waistband adapts to active body movement"],
+    specs:"L/XL/XXL/XXXL; 24-36 pieces by size",
+    proof:"",
+    vocabulary:["underwear-style pull-up","quick-change convenience","dynamic leak protection","soft cotton touch","360-degree stretchy waistband"],
+    creativeAngles:["fast changes for busy parents","all-motion leak defense","soft cotton comfort for active toddlers"],
+    safeScenes:["pull-up demonstration","running or couch-climb scene","cotton-surface texture close-up","daycare bag or travel case shot"],
+    focus:"Sell the combination of quick-change convenience plus active-baby protection, not just generic absorbency.",
+    focusZh:"拉拉裤的核心是“像小内裤一样好换”+“好动也稳”，要把这个组合写出来。"
+  },
+  nursing_pads:{
+    englishName:"Disposable Nursing Pads",
+    chineseName:"一次性乳垫",
+    label:"Disposable Nursing Pads（一次性乳垫）",
+    optionLabel:"母婴护理 · Disposable Nursing Pads",
+    positioningZh:"母婴护理 / 一次性乳垫",
+    category:"disposable nursing pad for breastfeeding and pumping routines, built around invisible wear and absorbent confidence",
+    audienceSummaryZh:"哺乳期妈妈、待产包准备用户、通勤泵奶用户",
+    audienceSummaryEn:"breastfeeding moms, hospital-bag planners, and pumping or commuting moms wanting discreet backup",
+    audiences:[
+      {label:"哺乳期妈妈",value:"breastfeeding moms who want dry, comfortable backup through the day"},
+      {label:"待产包准备用户",value:"families preparing hospital bags and postpartum nursing essentials"},
+      {label:"通勤泵奶用户",value:"working or traveling moms who want portable, discreet nursing-pad support"}
+    ],
+    defaultAudienceIndex:0,
+    scenariosZh:["哺乳期日常防护","泵奶通勤","外出社交","待产包准备"],
+    scenariosEn:["daily breastfeeding support","pumping and commuting","social or outdoor routines","hospital bag prep"],
+    keyPointsZh:["强吸收帮助保持衣物干爽","超薄隐形更自然","独立包装更卫生便携","绵柔亲肤减少刺激感","透气微孔减轻闷感"],
+    keyPointsEn:["strong absorbency helps keep bras and clothes drier","ultra-thin invisible profile feels more discreet under clothing","individual wrapping adds hygiene and portability","soft skin-friendly material supports longer wear comfort","breathable micro-holes help reduce heat and stickiness"],
+    specs:"Universal fit; 36 count per pack, individually wrapped",
+    proof:"",
+    vocabulary:["nursing pads","breastfeeding backup","pump-bag essential","invisible under clothing","individually wrapped"],
+    creativeAngles:["stay dry through feeding and pumping routines","more invisible backup under everyday outfits","easy-carry nursing essential for moms on the go"],
+    safeScenes:["pump bag or diaper bag flat lay","pad thinness close-up","office desk or travel pouch scene","maternity essentials basket"],
+    focus:"Use breastfeeding-mom language rather than generic feminine-care copy. Discretion and portability matter here.",
+    focusZh:"这款一定要用哺乳期妈妈语境，重点写隐形、防护和外出便携。"
+  },
+  cloud_period_underwear:{
+    englishName:"Cloud Period Underwear",
+    chineseName:"云朵经期安睡裤",
+    label:"Cloud Period Underwear（云朵经期安睡裤）",
+    optionLabel:"女性护理 · Cloud Period Underwear",
+    positioningZh:"女性护理 / 云朵安睡裤",
+    category:"overnight period pants for heavy nights, plus-size fit, and all-around sleep confidence",
+    audienceSummaryZh:"夜间量大女性、加大码用户、产后备用用户",
+    audienceSummaryEn:"women with heavy overnight flow, plus-size users, and postpartum backup shoppers",
+    audiences:[
+      {label:"夜间量大女性",value:"women who want stronger overnight confidence on heavier cycle nights"},
+      {label:"加大码用户",value:"curvy or plus-size users who want a softer, more forgiving overnight fit"},
+      {label:"产后备用用户",value:"postpartum users wanting easy overnight backup with a softer feel and no laundry stress"}
+    ],
+    defaultAudienceIndex:0,
+    scenariosZh:["重流量夜间","产后备用","旅行住宿","术后恢复"],
+    scenariosEn:["heavy overnight use","postpartum backup","travel nights","post-surgery recovery support"],
+    keyPointsZh:["360° 包裹更安心","云朵般柔软触感","加大码更友好","最长 12 小时夜间锁水","敏感肌也更安心"],
+    keyPointsEn:["360-degree all-around protection supports overnight peace of mind","ultra-soft non-woven layers feel gentler on skin","plus-size-friendly fit expands who can wear it comfortably","moisture-locking design is positioned for up to 12 hours overnight","unscented and dye-free positioning is more suitable for sensitive skin"],
+    specs:"M/L or XL; 20 count per pack",
+    proof:"FDA registered",
+    vocabulary:["overnight confidence","all-around protection","plus-size-friendly fit","cloud-soft feel","no-sheet-stress nights"],
+    creativeAngles:["stop worrying about ruined sheets","inclusive fit for curvier users","soft overnight confidence without laundry stress"],
+    safeScenes:["folded pants silhouette","waistband stretch shot","bedtime routine or pajama setup","travel pouch or overnight bag"],
+    focus:"Lead with overnight reassurance and inclusive fit. This SKU should feel like a specialist answer to heavy-night anxiety.",
+    focusZh:"这款要突出夜间安心和加大码友好，专业感来自“解决重夜用焦虑”。"
+  },
+  cotton_cover_panty_liners:{
+    englishName:"Cotton Cover Panty Liners",
+    chineseName:"纯棉面层护垫",
+    label:"Cotton Cover Panty Liners（纯棉面层护垫）",
+    optionLabel:"女性护理 · Cotton Cover Panty Liners",
+    positioningZh:"女性护理 / 纯棉面层护垫",
+    category:"cotton-cover panty liners for daily freshness, ingredient-conscious care, and sensitive-skin comfort",
+    audienceSummaryZh:"敏感肌女性、日常分泌物护理用户、成分关注型用户",
+    audienceSummaryEn:"women prioritizing gentle daily freshness, sensitive-skin comfort, and cleaner-feeling ingredient choices",
+    audiences:[
+      {label:"敏感肌女性",value:"women with sensitive or allergy-prone skin who want gentler daily-liner wear"},
+      {label:"日常分泌物护理用户",value:"women wanting soft, everyday freshness between periods or during light spotting"},
+      {label:"成分关注型用户",value:"ingredient-conscious shoppers preferring fragrance-free cotton-touch liner care"}
+    ],
+    defaultAudienceIndex:0,
+    scenariosZh:["经间期日常护理","轻微点滴防护","随身便携","办公通勤"],
+    scenariosEn:["between-period daily care","light spotting","portable everyday carry","work and commuting"],
+    keyPointsZh:["纯棉面层更温和","透气减少闷热和不适","无香更适合敏感肌","轻薄柔软降低异物感","独立包装便于随身携带"],
+    keyPointsEn:["cotton cover feels gentler on sensitive skin","breathability helps reduce stuffiness","fragrance-free positioning feels safer for daily intimate care","soft lightweight profile reduces presence","individual wrapping makes carrying easier"],
+    specs:"155 mm or 180 mm; 60 pieces per bag",
+    proof:"Dermatologically tested; FDA registered",
+    vocabulary:["cotton-cover liner","daily freshness","gentle intimate care","fragrance-free liner","sensitive-skin daily wear"],
+    creativeAngles:["soft daily freshness without irritation","cotton-touch comfort you barely feel","cleaner ingredient story for everyday wear"],
+    safeScenes:["liner profile close-up","purse or desk drawer carry shot","cotton texture cue","daily outfit routine"],
+    focus:"Write it as a daily-freshness liner for sensitive-skin users, not as a heavier period-protection product.",
+    focusZh:"这款是日常护垫，重点是纯棉温和和每日清爽，不是夜用卫生巾口吻。"
+  },
+  cotton_cover_pads:{
+    englishName:"Cotton Cover Pads",
+    chineseName:"纯棉面层卫生巾",
+    label:"Cotton Cover Pads（纯棉面层卫生巾）",
+    optionLabel:"女性护理 · Cotton Cover Pads",
+    positioningZh:"女性护理 / 纯棉面层卫生巾",
+    category:"cotton-cover sanitary pads for women who prioritize skin feel, ingredient safety, and a softer period-care experience",
+    audienceSummaryZh:"敏感肌女性、成分关注型用户、追求舒适经期体验的女性",
+    audienceSummaryEn:"women prioritizing gentle skin feel, safer-feeling ingredients, and a more comfortable period-care routine",
+    audiences:[
+      {label:"敏感肌女性",value:"women with sensitive skin who want a gentler menstrual-pad surface"},
+      {label:"成分关注型用户",value:"ingredient-conscious shoppers who prefer fragrance-free cotton-cover period care"},
+      {label:"舒适经期体验用户",value:"women wanting a softer, less stuffy pad experience during their period"}
+    ],
+    defaultAudienceIndex:0,
+    scenariosZh:["日常经期使用","夏季闷热场景","工作学习通勤","敏感肌经期护理"],
+    scenariosEn:["daily period care","hot-weather wear","work or school routines","sensitive-skin menstrual care"],
+    keyPointsZh:["纯棉面层更亲肤","透气结构减轻闷感","无香无刺激更安心","柔软贴合更舒适","敏感肌更容易建立信任感"],
+    keyPointsEn:["cotton cover feels gentler on the skin","breathable structure helps reduce stuffiness","fragrance-free formulation supports a safer-feeling routine","soft comfortable fit reduces harsh pad feel","hypoallergenic positioning improves trust for sensitive users"],
+    specs:"240 mm, 280 mm, or 320 mm; 28 / 24 / 20 pieces per bag",
+    proof:"Dermatologically tested; FDA registered",
+    vocabulary:["cotton-cover pad","sensitive-skin period care","fragrance-free protection","breathable comfort","gentle menstrual routine"],
+    creativeAngles:["period care that feels gentler on skin","cotton-touch comfort without overclaiming","cleaner ingredient positioning for sensitive users"],
+    safeScenes:["pad profile with size callouts","cotton texture cue","bag or drawer carry scene","workday or commute lifestyle shot"],
+    focus:"Keep the difference centered on cotton-touch comfort and ingredient reassurance, not on aggressive performance language.",
+    focusZh:"这款卫生巾要突出纯棉触感和成分安心感，语气要柔和可信。"
+  },
+  ultra_thin_pads:{
+    englishName:"Ultra Thin Pads",
+    chineseName:"超薄卫生巾",
+    label:"Ultra Thin Pads（超薄卫生巾）",
+    optionLabel:"女性护理 · Ultra Thin Pads",
+    positioningZh:"女性护理 / 超薄卫生巾",
+    category:"ultra-thin sanitary pad for medium-flow days, close fit, and all-day dryness without bulk",
+    audienceSummaryZh:"轻薄偏好女性、通勤运动用户、夏季日常用户",
+    audienceSummaryEn:"women who want a lighter-feel pad with reliable daytime coverage for commuting, exercise, or warmer weather",
+    audiences:[
+      {label:"轻薄偏好女性",value:"women who want a lighter-feel pad that does not feel bulky during the day"},
+      {label:"通勤运动用户",value:"women balancing commuting or fitness who need a pad that stays put with less presence"},
+      {label:"夏季日常用户",value:"users prioritizing dryness and breathability in hotter or more active conditions"}
+    ],
+    defaultAudienceIndex:0,
+    scenariosZh:["中量日常经期","通勤工作","运动健身","夏季外出"],
+    scenariosEn:["medium-flow days","commuting and work","sports and fitness","summer outings"],
+    keyPointsZh:["超薄贴合更轻盈","打孔表层吸收更快","瞬吸快干减少黏腻","透气设计减轻闷感","锁味帮助维持清新感"],
+    keyPointsEn:["ultra-thin profile reduces bulk","perforated surface supports quicker absorption","quick-dry comfort helps reduce sticky feeling","breathable design helps with heat and moisture","odor-locking positioning supports fresher all-day wear"],
+    specs:"245 mm, 290 mm, or 330 mm; 48 / 48 / 40 pieces per bag",
+    proof:"Dermatologically tested; FDA registered",
+    vocabulary:["ultra-thin pad","lightweight coverage","quick-dry comfort","breathable daywear","stay-put wings"],
+    creativeAngles:["lighter protection for busy days","thin feel without giving up security","better for commuting, workouts, and warmer days"],
+    safeScenes:["pad thinness comparison shot","bag carry or gym pouch scene","work desk or commute moment","size lineup graphic"],
+    focus:"The point is thin-feel confidence. It should sound more movement-friendly and daytime-ready than cotton-cover pads.",
+    focusZh:"超薄卫生巾要写“轻薄、快干、白天活动友好”，和纯棉面层那条线区分开。"
+  },
+  micro_panty_liners:{
+    englishName:"Micro Panty Liners",
+    chineseName:"超薄护垫",
+    label:"Micro Panty Liners（超薄护垫）",
+    optionLabel:"女性护理 · Micro Panty Liners",
+    positioningZh:"女性护理 / 超薄护垫",
+    category:"ultra-thin daily liner for invisible freshness, sensitive skin, and on-the-go portability",
+    audienceSummaryZh:"日常分泌物护理用户、敏感肌女性、通勤健身用户",
+    audienceSummaryEn:"women wanting invisible daily freshness, sensitive-skin support, and portable liner care",
+    audiences:[
+      {label:"日常分泌物护理用户",value:"women wanting a barely-there liner for daily freshness before or after their period"},
+      {label:"敏感肌女性",value:"sensitive-skin users looking for fragrance-free and more hypoallergenic daily care"},
+      {label:"通勤健身用户",value:"women who want an invisible liner that fits commuting or gym routines without bulk"}
+    ],
+    defaultAudienceIndex:0,
+    scenariosZh:["经前经后","日常通勤","运动健身","随身便携"],
+    scenariosEn:["before or after the period","daily commuting","sports and fitness","portable on-the-go use"],
+    keyPointsZh:["无香低敏更舒适","亲肤材质减少刺激感","透气不闷更清爽","隐形无感更适合日常","便携随身好拿取"],
+    keyPointsEn:["fragrance-free hypoallergenic positioning suits sensitive skin","skin-friendly material feels gentler","breathable design helps reduce stuffiness","ultra-thin invisible fit feels barely there","portable format works for bags and daily carry"],
+    specs:"155 mm; 50 count per pack",
+    proof:"Dermatologically tested; FDA registered",
+    vocabulary:["barely-there daily liner","invisible fit","fragrance-free freshness","portable daily care","sensitive-skin-friendly"],
+    creativeAngles:["invisible daily comfort","no-burden freshness","easy carry for busy routines"],
+    safeScenes:["liner slim-profile close-up","purse or gym bag placement","leggings or workwear confidence shot","packaging in desk drawer"],
+    focus:"This SKU wins on invisibility and daily ease. Keep the language light, fresh, and low-pressure.",
+    focusZh:"超薄护垫要写“无感”和“随身日常”，不是重护理那套语气。"
+  },
+  period_underwear:{
+    englishName:"Regular Period Underwear",
+    chineseName:"常规经期安睡裤",
+    label:"Regular Period Underwear（常规经期安睡裤）",
+    optionLabel:"女性护理 · Regular Period Underwear",
+    positioningZh:"女性护理 / 经期安睡裤",
+    category:"overnight period pants for heavy nights, stretch fit, and no-laundry convenience",
+    audienceSummaryZh:"夜间量大女性、旅行用户、产后恢复备用用户",
+    audienceSummaryEn:"women needing stronger overnight backup, travel convenience, or postpartum-friendly peace of mind",
+    audiences:[
+      {label:"夜间量大女性",value:"women who want dependable overnight backup on heavier cycle nights"},
+      {label:"旅行用户",value:"travelers wanting an easier no-laundry overnight option away from home"},
+      {label:"产后恢复备用用户",value:"postpartum users who want easy pull-on overnight backup with less cleanup stress"}
+    ],
+    defaultAudienceIndex:0,
+    scenariosZh:["夜间安睡","重流量夜用","旅行住宿","产后备用"],
+    scenariosEn:["overnight sleep","heavier-night use","travel stays","postpartum backup"],
+    keyPointsZh:["弹力裤型适配更多身形","3D 防护夜间更安心","锁水干爽减少黏腻感","日常夜用更具性价比","柔软亲肤更好睡"],
+    keyPointsEn:["stretchy snug fit adapts to more body shapes","3D leak protection supports peaceful nights","moisture-locking comfort helps reduce sticky feeling","cost-effective positioning suits repeat overnight use","soft skin-friendly feel supports better sleep"],
+    specs:"M/L or XL; 20 count per pack",
+    proof:"FDA registered",
+    vocabulary:["overnight period pants","pull-on night protection","peaceful sleep backup","stretch fit","no-laundry convenience"],
+    creativeAngles:["peaceful sleep without stress","pull-on convenience for heavy nights","better value for regular overnight protection"],
+    safeScenes:["bedtime setup","folded pants and waistband stretch","travel kit or suitcase shot","soft texture close-up"],
+    focus:"Position it as practical overnight confidence with pull-on convenience and repeat-use value.",
+    focusZh:"常规安睡裤更适合讲“夜用安心 + 穿脱方便 + 日常夜用性价比”。"
+  }
+};
+
+const BUILT_IN_PRODUCT_MEDIA={
+  adult_tabs:[{
+    label:"成人搭扣纸尿裤包装图",
+    path:"assets/reference-images/adult_tabs.png",
+    description:"成人护理规格板，展示三包蓝色 M/L/XL 包装、产品轮廓和尺寸信息，强调搭扣结构、夜间护理和规格覆盖。"
+  }],
+  disposable_briefs:[{
+    label:"成人拉拉裤包装图",
+    path:"assets/reference-images/disposable_briefs.png",
+    description:"成人拉拉裤规格板，画面为 Protective Underwear 包装和内裤式轮廓，重点是像内裤一样穿脱的使用感。"
+  }],
+  men_pads:[{
+    label:"男士失禁护垫包装图",
+    path:"assets/reference-images/men_pads.png",
+    description:"男士护垫规格板，灰蓝色包装搭配单片护垫轮廓，包含 260mm 和 50pcs 信息，突出男士专用、轻薄和低存在感。"
+  }],
+  postpartum_pads:[{
+    label:"产后护理垫对比图",
+    path:"assets/reference-images/postpartum_pads_compare.png",
+    description:"同一张对比板左侧是 Maxi postpartum pad，右侧是 calabash-shaped postpartum pad，包含产品轮廓、包装和规格对比。"
+  }],
+  calabash_postpartum_pads:[{
+    label:"葫芦型产后护理垫对比图",
+    path:"assets/reference-images/postpartum_pads_compare.png",
+    description:"同一张对比板左侧是 Maxi postpartum pad，右侧是 calabash-shaped postpartum pad，能够直接体现葫芦型版型和恢复期贴合差异。"
+  }],
+  women_pads:[{
+    label:"女性失禁护垫包装图",
+    path:"assets/reference-images/women_pads.png",
+    description:"紫粉色女性失禁护垫规格板，含 185mm 与 280mm 两个规格包装，突出透气、瞬吸和侧边防护。"
+  }],
+  activated_charcoal_underpads:[{
+    label:"活性炭隔尿垫规格图",
+    path:"assets/reference-images/activated_charcoal_underpads.png",
+    description:"护理垫规格板，展示两包 activated charcoal underpads 包装和深色片材，重点在活性炭除味、床椅表面防护和双尺寸。"
+  }],
+  disposable_male_wraps:[{
+    label:"公犬包裹包装图",
+    path:"assets/reference-images/disposable_male_wraps.png",
+    description:"公犬包裹规格板，含 XS/S/M/L 四个包装、狗狗示意图和腹部包裹轮廓，强调居家清洁、标记行为管理和腹部贴合。"
+  }],
+  disposable_diapers:[{
+    label:"宠物纸尿裤包装图",
+    path:"assets/reference-images/disposable_diapers_tail_hole.png",
+    description:"宠物纸尿裤包装板，展示 XS/S/M/L 多尺码包装和狗狗穿戴场景，画面可直接用于表达贴合、活动稳定和规格覆盖。"
+  }],
+  disposable_diapers_tail_hole:[{
+    label:"带尾孔宠物纸尿裤包装图",
+    path:"assets/reference-images/disposable_diapers_tail_hole.png",
+    description:"带尾孔宠物纸尿裤包装板，展示多尺码包装、狗狗示意和尾孔结构，是尾部贴合与活动舒适度的直接视觉证据。"
+  }],
+  training_pads:[{
+    label:"宠物训练尿垫包装图",
+    path:"assets/reference-images/training_pads.png",
+    description:"训练尿垫规格板，白色提手包装搭配片材展开图，强调室内如厕训练、地板防护和 50 片装。"
+  }],
+  regular_underpads:[{
+    label:"标准隔尿垫规格图",
+    path:"assets/reference-images/regular_underpads.png",
+    description:"标准隔尿垫规格板，展示多尺寸包装和展开片材，适合表达床椅表面防护、多场景使用和 50 片装。"
+  }],
+  lavender_underpads:[{
+    label:"薰衣草香型隔尿垫规格图",
+    path:"assets/reference-images/lavender_underpads.png",
+    description:"薰衣草香型隔尿垫规格板，画面是两包不同尺寸包装和产品片材，适合强调防护加气味体验。"
+  }],
+  male_wraps_size:[{
+    label:"公犬包裹尺码指南图",
+    path:"assets/reference-images/male_wraps_size_guide.png",
+    description:"公犬包裹尺码说明图，展示 XS/S/M/L 四个包装和腹围区间表，适合做选码教育内容。"
+  }],
+  ultra_thin_baby_diapers:[{
+    label:"超薄婴儿纸尿裤规格图",
+    path:"assets/reference-images/ultra_thin_baby_diapers.png",
+    description:"超薄婴儿纸尿裤规格板，展示 NB 到 XXL 多尺码包装、尿裤轮廓和宝宝视觉，突出轻薄、透气和动态防护。"
+  }],
+  t_shape_training_pants:[{
+    label:"T 型训练裤规格图",
+    path:"assets/reference-images/t_shape_training_pants.png",
+    description:"T 型训练裤规格板，展示多尺码包装和裤型示意，适合表达如厕训练、自主穿脱和湿态稳定。"
+  }],
+  q_shape_diaper_pants:[{
+    label:"Q 型拉拉裤规格图",
+    path:"assets/reference-images/q_shape_diaper_pants.png",
+    description:"Q 型拉拉裤规格板，展示多尺码包装、裤型和宝宝形象，重点是裤型更换便利和活动防护。"
+  }],
+  nursing_pads:[{
+    label:"一次性乳垫包装图",
+    path:"assets/reference-images/nursing_pads.png",
+    description:"乳垫产品板，画面为粉色盒装和圆形乳垫轮廓，适合表达哺乳期隐形防护、独立包装和随身便携。"
+  }],
+  cloud_period_underwear:[{
+    label:"云朵经期安睡裤包装图",
+    path:"assets/reference-images/cloud_period_underwear.png",
+    description:"cloud period underwear 包装板，展示 M/L 与 XL 两个包装、裤型轮廓和人物穿着示意，适合表达夜间安心和加大码友好。"
+  }],
+  cotton_cover_panty_liners:[{
+    label:"纯棉面层产品线规格图",
+    path:"assets/reference-images/cotton_cover_line.png",
+    description:"同一张女性护理产品板同时展示 cotton cover panty liners 的 155/180mm 和 cotton cover pads 的 240/280/320mm 多个包装与规格。"
+  }],
+  cotton_cover_pads:[{
+    label:"纯棉面层卫生巾规格图",
+    path:"assets/reference-images/cotton_cover_line.png",
+    description:"女性护理规格板，橙色包装同时覆盖 cotton cover pads 多个长度规格，强调纯棉触感、无香、柔和信任感。"
+  }],
+  ultra_thin_pads:[{
+    label:"超薄卫生巾规格图",
+    path:"assets/reference-images/ultra_thin_pads.png",
+    description:"超薄卫生巾规格板，展示 245/290/330mm 三个规格包装和卫生巾轮廓，强调超薄、穿孔表层和快干。"
+  }],
+  micro_panty_liners:[{
+    label:"超薄护垫包装图",
+    path:"assets/reference-images/micro_panty_liners.png",
+    description:"粉色 micro panty liners 单品包装板，展示 155mm 规格、50片装、护垫轮廓和低敏/无香型定位。"
+  }],
+  period_underwear:[{
+    label:"常规经期安睡裤包装图",
+    path:"assets/reference-images/period_underwear.png",
+    description:"常规 period underwear 粉色包装板，含 M/L 与 XL 两个包装、立体裤型示意和腰围规格表，适合表达夜间安心和穿脱便利。"
+  }]
+};
+
+const SELECT_NOTE_MAP={"s-sku":"s-knowledge","v-sku":"v-knowledge","l-sku":"l-knowledge","e-sku":"e-knowledge"};
+const SELECT_MEDIA_MAP={"s-sku":"s-media","v-sku":"v-media","l-sku":"l-media","e-sku":"e-media"};
+const STORAGE_KEYS={
+  customProducts:"tk_content_custom_products_v6",
+  generationHistory:"tk_content_generation_history_v6",
+  githubSettings:"tk_content_github_settings_v1"
+};
+const IMAGE_MAX_ATTACHMENTS=4;
+let CUSTOM_PRODUCTS={};
+let GENERATION_HISTORY=[];
+let extensionUploads=[];
+let lastExtensionDraft=null;
+const imageDataUrlCache={};
+
+Object.entries(BUILT_IN_PRODUCT_MEDIA).forEach(([productId,images])=>{
+  if(PRODUCT_LIBRARY[productId]){
+    PRODUCT_LIBRARY[productId].referenceImages=images.map((image,index)=>({
+      id:`${productId}_ref_${index+1}`,
+      source:"built_in",
+      ...image
+    }));
+  }
+});
+
+function checkKey(){
+  const k=document.getElementById("apikey").value.trim();
+  const s=document.getElementById("api-status");
+  if(k.startsWith("sk-")&&k.length>20){s.textContent="已配置";s.className="api-status ok";}
+  else{s.textContent="未配置";s.className="api-status no";}
+}
+
+function updateModelCost(){
+  document.getElementById("model-cost").textContent=MODEL_COSTS[document.getElementById("model-select").value]||"";
+}
+
+function switchTab(name,el){
+  document.querySelectorAll(".tab").forEach((t)=>t.classList.remove("active"));
+  document.querySelectorAll(".panel").forEach((p)=>p.classList.remove("active"));
+  el.classList.add("active");
+  document.getElementById("panel-"+name).classList.add("active");
+}
+
+function switchOuttype(type){
+  currentOuttype=type;
+  document.getElementById("ot-sop").classList.toggle("active",type==="sop");
+  document.getElementById("ot-vo").classList.toggle("active",type==="vo");
+  const isVO=type==="vo";
+  document.getElementById("sop-fields").classList.toggle("hidden",isVO);
+  document.getElementById("vo-fields").classList.toggle("hidden",!isVO);
+  document.getElementById("tool-rec-text").innerHTML=isVO
+    ? "✅ <strong>ElevenLabs 使用说明：</strong>将输出的纯口播文本直接粘贴到 ElevenLabs → Speech Synthesis，按下方推荐参数配置声音，批量导出 MP3 后导入 CapCut 替换配音轨。支持同时生成多个变体用于 A/B 测试。"
+    : "✅ 真正可自动化的工具：<strong>OpusClip</strong>（长视频自动切片）、<strong>Pictory</strong>（脚本转视频）、<strong>Runway Gen-3</strong>（AI 素材生成）。以下输出为给人工剪辑师执行的 SOP 文档。";
+  document.getElementById("script-label").textContent=isVO?"原始脚本 / 分镜（必填，用于生成口播文本）":"分镜 / 脚本（可选）";
+  document.getElementById("e-script").placeholder=isVO
+    ? "粘贴带时间轴的脚本，或直接粘贴原文。AI 会去除所有镜头描述，只保留口播文本。"
+    : "例：\n0-3s: 特写产品包装\n3-8s: 使用场景演示\n8-15s: 结果展示 + CTA";
+  document.getElementById("btn-editor").textContent=isVO?"生成配音脚本":"生成剪辑 SOP";
+  document.getElementById("out-editor-label").textContent=isVO?"ElevenLabs 配音脚本":"剪辑师 SOP";
+  document.getElementById("out-editor").style.display="none";
+}
+
+function escapeHtml(value){
+  return String(value||"")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#39;");
+}
+
+function toFileUrl(path){
+  const raw=String(path||"").trim();
+  if(!raw)return "";
+  if(/^(data:|blob:|https?:|file:\/\/\/)/i.test(raw))return raw;
+  if(/^[A-Za-z]:[\\/]/.test(raw)){
+    return encodeURI(`file:///${raw.replace(/\\/g,"/").replace(/^\/+/,"")}`);
+  }
+  return encodeURI(raw.replace(/\\/g,"/"));
+}
+
+function createOption(value,label){
+  const option=document.createElement("option");
+  option.value=value;
+  option.textContent=label;
+  return option;
+}
+
+function splitInputList(text){
+  return String(text||"")
+    .split(/[\n,，;；、]+/)
+    .map((item)=>item.trim())
+    .filter(Boolean);
+}
+
+function normalizeStringArray(value,fallback=[]){
+  const source=Array.isArray(value)?value:fallback;
+  return source.map((item)=>String(item||"").trim()).filter(Boolean);
+}
+
+function normalizeAudienceList(value,fallbackZh,fallbackEn){
+  if(Array.isArray(value)&&value.length){
+    return value.map((item,index)=>{
+      if(item&&typeof item==="object"){
+        const label=String(item.label||item.title||`Audience ${index+1}`).trim();
+        const text=String(item.value||item.description||item.prompt||item.label||"").trim();
+        if(label&&text)return {label,value:text};
+      }else{
+        const text=String(item||"").trim();
+        if(text)return {label:text,value:text};
+      }
+      return null;
+    }).filter(Boolean);
+  }
+  return [{
+    label:String(fallbackZh||"核心用户").trim(),
+    value:String(fallbackEn||"primary target users").trim()
+  }];
+}
+
+function buildProductLabel(englishName,chineseName){
+  const en=String(englishName||"").trim();
+  const zh=String(chineseName||"").trim();
+  if(en&&zh)return `${en}（${zh}）`;
+  return en||zh||"未命名产品";
+}
+
+function getPreviewUrl(image){
+  if(!image)return "";
+  return image.previewUrl||image.dataUrl||image.aiUrl||(image.path?toFileUrl(image.path):"");
+}
+
+function normalizeReferenceImages(value){
+  if(!Array.isArray(value))return [];
+  return value.map((item,index)=>{
+    if(!item||typeof item!=="object")return null;
+    const path=String(item.path||"").trim();
+    const dataUrl=String(item.dataUrl||"").trim();
+    const aiUrl=String(item.aiUrl||dataUrl||"").trim();
+    const previewUrl=String(item.previewUrl||dataUrl||aiUrl||(path?toFileUrl(path):"")).trim();
+    return {
+      id:String(item.id||`ref_${index+1}`),
+      source:item.source||"custom_upload",
+      name:String(item.name||item.label||`Image ${index+1}`).trim(),
+      label:String(item.label||`参考图 ${index+1}`).trim(),
+      description:String(item.description||"Product reference image").trim(),
+      path,
+      dataUrl,
+      aiUrl,
+      previewUrl
+    };
+  }).filter(Boolean);
+}
+
+function normalizeSellingCopy(value){
+  const source=value&&typeof value==="object"?value:{};
+  return {
+    headlineZh:String(source.headlineZh||"").trim(),
+    headlineEn:String(source.headlineEn||"").trim(),
+    bulletsZh:normalizeStringArray(source.bulletsZh,[]),
+    bulletsEn:normalizeStringArray(source.bulletsEn,[]),
+    shortCaptionEn:String(source.shortCaptionEn||"").trim()
+  };
+}
+
+function normalizeProductRecord(product,id){
+  const englishName=String(product.englishName||product.name||product.label||id||"Custom Product").trim();
+  const chineseName=String(product.chineseName||"").trim();
+  const seriesLabelZh=String(product.seriesLabelZh||product.familyZh||"扩展产品").trim();
+  const audiences=normalizeAudienceList(product.audiences,product.audienceSummaryZh,product.audienceSummaryEn);
+  const scenariosZh=normalizeStringArray(product.scenariosZh,[]);
+  const scenariosEn=normalizeStringArray(product.scenariosEn,[]);
+  const keyPointsZh=normalizeStringArray(product.keyPointsZh,[]);
+  const keyPointsEn=normalizeStringArray(product.keyPointsEn,[]);
+  const vocabulary=normalizeStringArray(product.vocabulary,[]);
+  const creativeAngles=normalizeStringArray(product.creativeAngles,[]);
+  const safeScenes=normalizeStringArray(product.safeScenes,[]);
+  return {
+    ...product,
+    id,
+    englishName,
+    chineseName,
+    label:buildProductLabel(englishName,chineseName),
+    optionLabel:String(product.optionLabel||`${seriesLabelZh} · ${englishName}`).trim(),
+    positioningZh:String(product.positioningZh||`${seriesLabelZh} / ${chineseName||englishName}`).trim(),
+    seriesLabelZh,
+    category:String(product.category||"absorbent-care product").trim(),
+    audienceSummaryZh:String(product.audienceSummaryZh||audiences.map((aud)=>aud.label).join("、")||"核心用户").trim(),
+    audienceSummaryEn:String(product.audienceSummaryEn||audiences.map((aud)=>aud.value).join(", ")||"primary target users").trim(),
+    audiences,
+    defaultAudienceIndex:Math.min(Math.max(Number(product.defaultAudienceIndex)||0,0),Math.max(audiences.length-1,0)),
+    scenariosZh:scenariosZh.length?scenariosZh:["日常使用"],
+    scenariosEn:scenariosEn.length?scenariosEn:["daily use"],
+    keyPointsZh:keyPointsZh.length?keyPointsZh:["结合图片和已知资料表达真实卖点"],
+    keyPointsEn:keyPointsEn.length?keyPointsEn:["use the real product facts and image cues instead of generic copy"],
+    specs:String(product.specs||"").trim(),
+    proof:String(product.proof||"").trim(),
+    vocabulary:vocabulary.length?vocabulary:["specific product language"],
+    creativeAngles:creativeAngles.length?creativeAngles:["lead with the most relevant buying trigger for this SKU"],
+    safeScenes:safeScenes.length?safeScenes:["packaging close-up","safe lifestyle setup","texture or fit demonstration"],
+    focus:String(product.focus||"Use the saved product brief and images as the only source of truth.").trim(),
+    focusZh:String(product.focusZh||"以后生成内容时，以这款产品的图片和知识卡为准，不要泛化成通用文案。").trim(),
+    referenceImages:normalizeReferenceImages(product.referenceImages),
+    sellingCopy:normalizeSellingCopy(product.sellingCopy)
+  };
+}
+
+function getProductLibrary(){
+  return {...PRODUCT_LIBRARY,...CUSTOM_PRODUCTS};
+}
+
+function getProductById(productId){
+  return getProductLibrary()[productId]||null;
+}
+
+function getReferenceImages(product){
+  return Array.isArray(product?.referenceImages)?product.referenceImages:[];
+}
+
+function loadCustomProducts(){
+  try{
+    const raw=JSON.parse(localStorage.getItem(STORAGE_KEYS.customProducts)||"{}");
+    CUSTOM_PRODUCTS={};
+    Object.entries(raw).forEach(([productId,product])=>{
+      CUSTOM_PRODUCTS[productId]=normalizeProductRecord(product,productId);
+    });
+  }catch{
+    CUSTOM_PRODUCTS={};
+  }
+}
+
+function persistCustomProducts(){
+  localStorage.setItem(STORAGE_KEYS.customProducts,JSON.stringify(CUSTOM_PRODUCTS));
+}
+
+function loadGenerationHistory(){
+  try{
+    const raw=JSON.parse(localStorage.getItem(STORAGE_KEYS.generationHistory)||"[]");
+    GENERATION_HISTORY=Array.isArray(raw)?raw:[];
+  }catch{
+    GENERATION_HISTORY=[];
+  }
+}
+
+function persistGenerationHistory(){
+  localStorage.setItem(STORAGE_KEYS.generationHistory,JSON.stringify(GENERATION_HISTORY));
+}
+
+function addGenerationHistory(type,product,content,metaText){
+  const text=String(content||"").trim();
+  if(!text)return;
+  GENERATION_HISTORY.unshift({
+    id:`hist_${Date.now()}_${Math.random().toString(36).slice(2,8)}`,
+    type,
+    productId:product?.id||"",
+    productLabel:product?.label||"",
+    createdAt:new Date().toISOString(),
+    metaText:metaText||"",
+    content:text
+  });
+  GENERATION_HISTORY=GENERATION_HISTORY.slice(0,80);
+  persistGenerationHistory();
+}
+
+function downloadTextFile(filename,text,mimeType="application/json"){
+  const blob=new Blob([text],{type:mimeType});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download=filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function buildWorkbenchExportSnapshot(){
+  const githubSettings=getGitHubSettings();
+  return {
+    version:"tk_content_workbench_share_v1",
+    exportedAt:new Date().toISOString(),
+    customProducts:CUSTOM_PRODUCTS,
+    generationHistory:GENERATION_HISTORY,
+    githubSettings:{
+      repo:githubSettings.repo,
+      branch:githubSettings.branch,
+      folder:githubSettings.folder
+    }
+  };
+}
+
+function exportWorkbenchData(){
+  const snapshot=buildWorkbenchExportSnapshot();
+  const stamp=new Date().toISOString().slice(0,19).replace(/[:T]/g,"-");
+  downloadTextFile(`tk-content-workbench-data-${stamp}.json`,JSON.stringify(snapshot,null,2));
+  setGitHubStatus(`已导出工具数据包：${Object.keys(CUSTOM_PRODUCTS).length} 个扩展产品，${GENERATION_HISTORY.length} 条生成记录。`);
+}
+
+function applyImportedWorkbenchData(payload){
+  const incomingProducts=payload&&typeof payload.customProducts==="object"&&payload.customProducts?payload.customProducts:{};
+  const normalizedProducts={};
+  Object.entries(incomingProducts).forEach(([productId,product])=>{
+    normalizedProducts[productId]=normalizeProductRecord(product,productId);
+  });
+  CUSTOM_PRODUCTS=normalizedProducts;
+  persistCustomProducts();
+  GENERATION_HISTORY=Array.isArray(payload?.generationHistory)?payload.generationHistory:[];
+  persistGenerationHistory();
+  if(payload?.githubSettings&&typeof payload.githubSettings==="object"){
+    const current=getGitHubSettings();
+    localStorage.setItem(STORAGE_KEYS.githubSettings,JSON.stringify({
+      repo:String(payload.githubSettings.repo||current.repo||"").trim(),
+      branch:String(payload.githubSettings.branch||current.branch||"main").trim()||"main",
+      folder:String(payload.githubSettings.folder||current.folder||"tk-content-workbench-data").trim()||"tk-content-workbench-data",
+      token:current.token||""
+    }));
+  }
+  initProductSelectors();
+  renderSavedProductsList();
+  fillGitHubSettings();
+}
+
+async function handleImportStateChange(event){
+  const file=event.target.files?.[0];
+  if(!file)return;
+  try{
+    const text=await file.text();
+    const payload=JSON.parse(text);
+    applyImportedWorkbenchData(payload);
+    setGitHubStatus(`导入完成：${Object.keys(CUSTOM_PRODUCTS).length} 个扩展产品，${GENERATION_HISTORY.length} 条生成记录。`);
+  }catch(e){
+    setGitHubStatus(`导入失败：${e.message}`,true);
+  }
+  event.target.value="";
+}
+
+function getGitHubSettings(){
+  try{
+    const raw=JSON.parse(localStorage.getItem(STORAGE_KEYS.githubSettings)||"{}");
+    return {
+      repo:String(raw.repo||"").trim(),
+      branch:String(raw.branch||"main").trim()||"main",
+      folder:String(raw.folder||"tk-content-workbench-data").trim()||"tk-content-workbench-data",
+      token:String(raw.token||"").trim()
+    };
+  }catch{
+    return {repo:"",branch:"main",folder:"tk-content-workbench-data",token:""};
+  }
+}
+
+function setGitHubStatus(text,isError=false){
+  const el=document.getElementById("gh-status");
+  if(!el)return;
+  el.textContent=text;
+  el.style.color=isError?"#A63C3C":"#35506B";
+}
+
+function fillGitHubSettings(){
+  const settings=getGitHubSettings();
+  const repo=document.getElementById("gh-repo");
+  const branch=document.getElementById("gh-branch");
+  const folder=document.getElementById("gh-folder");
+  const token=document.getElementById("gh-token");
+  if(repo)repo.value=settings.repo;
+  if(branch)branch.value=settings.branch;
+  if(folder)folder.value=settings.folder;
+  if(token)token.value=settings.token;
+}
+
+function saveGitHubSettings(){
+  const settings={
+    repo:document.getElementById("gh-repo").value.trim(),
+    branch:document.getElementById("gh-branch").value.trim()||"main",
+    folder:document.getElementById("gh-folder").value.trim()||"tk-content-workbench-data",
+    token:document.getElementById("gh-token").value.trim()
+  };
+  localStorage.setItem(STORAGE_KEYS.githubSettings,JSON.stringify(settings));
+  setGitHubStatus(`已保存 GitHub 配置：${settings.repo||"未填写仓库"} / ${settings.branch} / ${settings.folder}`);
+}
+
+function populateSkuSelect(selectId,placeholder){
+  const select=document.getElementById(selectId);
+  if(!select)return;
+  const previous=select.value;
+  const library=getProductLibrary();
+  select.innerHTML="";
+  select.appendChild(createOption("",placeholder));
+  Object.keys(library).forEach((key)=>{
+    select.appendChild(createOption(key,library[key].optionLabel));
+  });
+  if(previous&&library[previous])select.value=previous;
+}
+
+function getSelectedProduct(selectId){
+  const select=document.getElementById(selectId);
+  if(!select)return null;
+  return getProductById(select.value);
+}
+
+function getSelectedText(selectId){
+  const select=document.getElementById(selectId);
+  return select&&select.selectedIndex>=0?select.options[select.selectedIndex].textContent.trim():"";
+}
+
+function populateAudienceSelect(productId){
+  const select=document.getElementById("s-audience");
+  if(!select)return;
+  const previous=select.value;
+  select.innerHTML="";
+  const product=getProductById(productId);
+  if(!product){
+    select.appendChild(createOption("","-- 先选择产品 --"));
+    select.disabled=true;
+    return;
+  }
+  product.audiences.forEach((aud)=>{
+    select.appendChild(createOption(aud.value,aud.label));
+  });
+  select.disabled=false;
+  const hasPrevious=product.audiences.some((aud)=>aud.value===previous);
+  select.value=hasPrevious?previous:product.audiences[product.defaultAudienceIndex||0].value;
+}
+
+function buildKnowledgeHtml(product){
+  return [
+    `<strong>${escapeHtml(product.label)}</strong>`,
+    `定位：${escapeHtml(product.positioningZh)}`,
+    `核心人群：${escapeHtml(product.audienceSummaryZh)}`,
+    `主打场景：${escapeHtml((product.scenariosZh||[]).slice(0,3).join("、"))}`,
+    `优先表达：${escapeHtml((product.keyPointsZh||[]).slice(0,3).join("、"))}`,
+    `内容角度：${escapeHtml(product.focusZh)}`
+  ].join("<br>");
+}
+
+function renderProductKnowledge(selectId){
+  const note=document.getElementById(SELECT_NOTE_MAP[selectId]);
+  if(!note)return;
+  const product=getSelectedProduct(selectId);
+  if(!product){
+    note.classList.add("hidden");
+    note.innerHTML="";
+    return;
+  }
+  note.classList.remove("hidden");
+  note.innerHTML=buildKnowledgeHtml(product);
+}
+
+function renderProductMedia(selectId){
+  const container=document.getElementById(SELECT_MEDIA_MAP[selectId]);
+  if(!container)return;
+  const product=getSelectedProduct(selectId);
+  const images=getReferenceImages(product);
+  if(!product||!images.length){
+    container.classList.add("hidden");
+    container.innerHTML="";
+    return;
+  }
+  container.classList.remove("hidden");
+  container.innerHTML=images.slice(0,4).map((image,index)=>{
+    const previewUrl=getPreviewUrl(image);
+    const tag=image.source==="custom_upload"?"用户上传图":"自动喂给 AI";
+    const thumb=previewUrl
+      ? `<img class="media-thumb" src="${escapeHtml(previewUrl)}" alt="${escapeHtml(image.label||`参考图 ${index+1}`)}" loading="lazy">`
+      : `<div class="media-thumb"></div>`;
+    return `
+      <div class="media-card">
+        <span class="media-tag">${escapeHtml(tag)}</span>
+        ${thumb}
+        <div class="media-body">
+          <div class="media-title">${escapeHtml(image.label||`参考图 ${index+1}`)}</div>
+          <div class="media-desc">${escapeHtml(image.description||"这张图会随产品一起自动作为视觉上下文喂给 AI。")}</div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderProductContext(selectId){
+  renderProductKnowledge(selectId);
+  renderProductMedia(selectId);
+}
+
+function syncScriptProduct(){
+  const productId=document.getElementById("s-sku").value;
+  populateAudienceSelect(productId);
+  renderProductContext("s-sku");
+}
+
+function bindEventOnce(element,eventName,handler){
+  if(!element)return;
+  const key=`bound${eventName.charAt(0).toUpperCase()+eventName.slice(1)}`;
+  if(element.dataset[key]==="1")return;
+  element.addEventListener(eventName,handler);
+  element.dataset[key]="1";
+}
+
+function initProductSelectors(){
+  populateSkuSelect("s-sku","-- 选择产品 --");
+  populateSkuSelect("v-sku","-- 选择产品 --");
+  populateSkuSelect("l-sku","-- 可选：不指定产品 --");
+  populateSkuSelect("e-sku","-- 可选：不指定产品 --");
+  syncScriptProduct();
+  ["v-sku","l-sku","e-sku"].forEach((id)=>renderProductContext(id));
+  bindEventOnce(document.getElementById("s-sku"),"change",syncScriptProduct);
+  ["v-sku","l-sku","e-sku"].forEach((id)=>{
+    bindEventOnce(document.getElementById(id),"change",()=>renderProductContext(id));
+  });
+}
+
+function buildReferenceImageSummary(product){
+  const images=getReferenceImages(product).slice(0,3);
+  if(!images.length)return "";
+  return images.map((image,index)=>`${index+1}) ${image.label}: ${image.description}`).join(" | ");
+}
+
+function buildProductBrief(product){
+  if(!product){
+    return "No specific SKU was selected. Infer only the broad absorbent-care category from the user's source text or scene settings and stay conservative with specs and claims.";
+  }
+  return [
+    `- Product: ${product.englishName}`,
+    `- Vertical: ${product.positioningZh}`,
+    `- Category description: ${product.category}`,
+    `- Primary audience: ${product.audienceSummaryEn}`,
+    `- Key use scenarios: ${(product.scenariosEn||[]).join(", ")}`,
+    `- Approved selling points: ${(product.keyPointsEn||[]).join("; ")}`,
+    `- Specs / pack info: ${product.specs||"not provided"}`,
+    product.proof?`- Proof points: ${product.proof}`:"",
+    `- Preferred vocabulary: ${(product.vocabulary||[]).join(", ")}`,
+    `- Strong creative angles: ${(product.creativeAngles||[]).join("; ")}`,
+    `- Safe visual anchors: ${(product.safeScenes||[]).join("; ")}`,
+    buildReferenceImageSummary(product)?`- Reference image summary: ${buildReferenceImageSummary(product)}`:"",
+    `- Strategic focus: ${product.focus}`
+  ].filter(Boolean).join("\n");
+}
+
+function buildSystemPrompt(product,specialty){
+  return [
+    "You are a senior TikTok performance-content strategist for absorbent-care products in cross-border e-commerce.",
+    specialty,
+    COMPLIANCE,
+    `Professionalization rules:
+- Stay inside the selected product vertical instead of writing generic hygiene-product copy
+- Use the product brief and attached product images as the source of truth for audience, use scenarios, specs, packaging cues, and proof points
+- Prefer decision-driver language such as fit, absorbency structure, breathability, odor control, convenience, portability, and caregiving confidence
+- Mention 2-4 concrete product truths from the brief instead of vague adjectives like "premium", "amazing", or "must-have"
+- If a proof point such as dermatological testing or FDA registration is provided, treat it as a factual trust signal, never as a medical endorsement
+- Never invent extra materials, absorption capacities, medical outcomes, or unsupported certifications
+- If an image is attached, use it only for visible packaging, product form, size lineup, and safe visual cues
+- If the user adds selling points that conflict with the brief or the image cues, rewrite them safely and keep the brief accurate`,
+    "Product brief:",
+    buildProductBrief(product)
+  ].join("\n\n");
+}
+
+function renderImageToDataUrl(img,maxEdge=1400,quality=0.9){
+  const width=img.naturalWidth||img.width;
+  const height=img.naturalHeight||img.height;
+  if(!width||!height)return null;
+  const scale=Math.min(1,maxEdge/Math.max(width,height));
+  const canvas=document.createElement("canvas");
+  canvas.width=Math.max(1,Math.round(width*scale));
+  canvas.height=Math.max(1,Math.round(height*scale));
+  const ctx=canvas.getContext("2d");
+  ctx.drawImage(img,0,0,canvas.width,canvas.height);
+  return canvas.toDataURL("image/jpeg",quality);
+}
+
+function readFileAsDataUrl(file){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(String(reader.result||""));
+    reader.onerror=()=>reject(reader.error||new Error("Failed to read file"));
+    reader.readAsDataURL(file);
+  });
+}
+
+function resizeDataUrl(dataUrl,maxEdge=1400,quality=0.9){
+  return new Promise((resolve)=>{
+    const img=new Image();
+    img.onload=()=>{
+      try{
+        resolve(renderImageToDataUrl(img,maxEdge,quality)||dataUrl);
+      }catch{
+        resolve(dataUrl);
+      }
+    };
+    img.onerror=()=>resolve(dataUrl);
+    img.src=dataUrl;
+  });
+}
+
+async function fileToCompressedDataUrl(file){
+  const raw=await readFileAsDataUrl(file);
+  return resizeDataUrl(raw);
+}
+
+function loadImageElement(url){
+  return new Promise((resolve)=>{
+    const img=new Image();
+    img.onload=()=>resolve(img);
+    img.onerror=()=>resolve(null);
+    img.src=url;
+  });
+}
+
+async function getImageDataUrl(image){
+  if(!image)return null;
+  if(image.aiUrl)return image.aiUrl;
+  if(image.dataUrl)return image.dataUrl;
+  const cacheKey=image.path||image.previewUrl||image.id;
+  if(cacheKey&&imageDataUrlCache[cacheKey])return imageDataUrlCache[cacheKey];
+  const previewUrl=getPreviewUrl(image);
+  if(!previewUrl)return null;
+  const img=await loadImageElement(previewUrl);
+  if(!img)return null;
+  try{
+    const dataUrl=renderImageToDataUrl(img);
+    if(dataUrl&&cacheKey)imageDataUrlCache[cacheKey]=dataUrl;
+    return dataUrl||null;
+  }catch{
+    return null;
+  }
+}
+
+async function buildProductMediaContent(product){
+  const images=getReferenceImages(product).slice(0,IMAGE_MAX_ATTACHMENTS);
+  if(!images.length)return [];
+  const parts=[{
+    type:"text",
+    text:[
+      "Auto-attached product reference images are included below.",
+      "Treat them as packaging/spec references only.",
+      "Use only visible details or confirmed brief facts. If anything is unclear, stay conservative."
+    ].join("\n")
+  }];
+  for(let i=0;i<images.length;i+=1){
+    const image=images[i];
+    parts.push({
+      type:"text",
+      text:`Reference image ${i+1}: ${image.label}\n${image.description}`
+    });
+    const dataUrl=await getImageDataUrl(image);
+    if(dataUrl){
+      parts.push({type:"image_url",image_url:{url:dataUrl}});
+    }
+  }
+  return parts;
+}
+
+async function buildUserMessage(product,promptText){
+  const content=[{type:"text",text:promptText}];
+  const mediaParts=await buildProductMediaContent(product);
+  if(mediaParts.length)content.push(...mediaParts);
+  return {role:"user",content};
+}
+
+function setExtensionStatus(text,isError=false){
+  const el=document.getElementById("x-save-status");
+  if(!el)return;
+  el.textContent=text;
+  el.style.color=isError?"#A63C3C":"";
+}
+
+function renderExtensionUploads(){
+  const box=document.getElementById("x-previews");
+  if(!box)return;
+  if(!extensionUploads.length){
+    box.classList.add("hidden");
+    box.innerHTML="";
+    return;
+  }
+  box.classList.remove("hidden");
+  box.innerHTML=extensionUploads.map((image,index)=>`
+    <div class="preview-card">
+      <img class="preview-thumb" src="${escapeHtml(image.previewUrl||image.dataUrl)}" alt="${escapeHtml(image.name||`上传图 ${index+1}`)}" loading="lazy">
+      <div class="preview-meta">${escapeHtml(image.name||`上传图 ${index+1}`)}<br>${escapeHtml(image.description||"会自动保存到新产品资料中")}</div>
+    </div>
+  `).join("");
+}
+
+function renderSavedProductsList(){
+  const box=document.getElementById("x-saved-products");
+  if(!box)return;
+  const items=Object.values(CUSTOM_PRODUCTS);
+  if(!items.length){
+    box.classList.add("hidden");
+    box.innerHTML="";
+    return;
+  }
+  box.classList.remove("hidden");
+  box.innerHTML=`<strong>已保存扩展产品（${items.length}）</strong><br>${items.map((product)=>`<span style="display:inline-block;margin:6px 8px 0 0;padding:3px 9px;border-radius:999px;background:#35506B;color:#fff">${escapeHtml(product.label)}</span>`).join("")}`;
+}
+
+async function handleExtensionImageChange(event){
+  const allFiles=Array.from(event.target.files||[]);
+  const files=allFiles.slice(0,6);
+  if(!files.length){
+    extensionUploads=[];
+    renderExtensionUploads();
+    document.getElementById("btn-extension-save").disabled=true;
+    setExtensionStatus("还没有上传图片。你也可以先填写信息再生成。");
+    return;
+  }
+  setExtensionStatus("正在处理上传图片...");
+  extensionUploads=await Promise.all(files.map(async(file,index)=>{
+    const dataUrl=await fileToCompressedDataUrl(file);
+    return {
+      id:`upload_${Date.now()}_${index+1}`,
+      source:"custom_upload",
+      name:file.name,
+      label:`用户上传图 ${index+1}`,
+      description:`用户上传的产品参考图：${file.name}`,
+      dataUrl,
+      aiUrl:dataUrl,
+      previewUrl:dataUrl
+    };
+  }));
+  lastExtensionDraft=null;
+  document.getElementById("btn-extension-save").disabled=true;
+  renderExtensionUploads();
+  setExtensionStatus(allFiles.length>files.length?`已载入前 ${files.length} 张图片；为控制体积，超出的图片未纳入本次生成。`:`已载入 ${files.length} 张图片，生成时会自动喂给 AI。`);
+}
+
+function collectExtensionForm(){
+  const englishName=document.getElementById("x-name").value.trim();
+  const chineseName=document.getElementById("x-cn").value.trim();
+  const family=document.getElementById("x-family").value.trim();
+  const category=document.getElementById("x-category").value.trim();
+  const audience=document.getElementById("x-audience").value.trim();
+  const scenes=document.getElementById("x-scenes").value.trim();
+  const points=document.getElementById("x-points").value.trim();
+  const notes=document.getElementById("x-notes").value.trim();
+  if(!englishName&&!chineseName)return null;
+  return {englishName,chineseName,family,category,audience,scenes,points,notes};
+}
+
+function sanitizeJsonText(raw){
+  return String(raw||"")
+    .trim()
+    .replace(/^```json\s*/i,"")
+    .replace(/^```\s*/i,"")
+    .replace(/\s*```$/,"")
+    .trim();
+}
+
+function buildExtensionSystemPrompt(){
+  return [
+    "You are a senior merchandising strategist building structured product briefs for adult care, maternal care, feminine care, pet care, and absorbent-care content systems.",
+    COMPLIANCE,
+    "Return valid JSON only. Never use markdown. Never invent specs, certifications, or medical outcomes."
+  ].join("\n\n");
+}
+
+function buildExtensionPromptText(form){
+  return [
+    "Build a vertical specialist product brief for a new SKU that will be used inside a TikTok content generator.",
+    `Family / vertical: ${form.family||"扩展产品"}`,
+    `English name: ${form.englishName||"not provided"}`,
+    `Chinese name: ${form.chineseName||"not provided"}`,
+    `User-described category: ${form.category||"infer carefully from the product images and notes"}`,
+    `User-described audience: ${form.audience||"not provided"}`,
+    `User-described scenarios: ${form.scenes||"not provided"}`,
+    `Known selling points / specs / proof: ${form.points||"not provided"}`,
+    `Additional notes: ${form.notes||"none"}`,
+    "",
+    "Output strict JSON only with this schema:",
+    `{
+  "englishName":"",
+  "chineseName":"",
+  "seriesLabelZh":"",
+  "positioningZh":"",
+  "category":"",
+  "audienceSummaryZh":"",
+  "audienceSummaryEn":"",
+  "audiences":[{"label":"","value":""},{"label":"","value":""},{"label":"","value":""}],
+  "scenariosZh":["","","",""],
+  "scenariosEn":["","","",""],
+  "keyPointsZh":["","","",""],
+  "keyPointsEn":["","","",""],
+  "specs":"",
+  "proof":"",
+  "vocabulary":["","","","",""],
+  "creativeAngles":["","",""],
+  "safeScenes":["","","",""],
+  "focus":"",
+  "focusZh":"",
+  "sellingCopy":{
+    "headlineZh":"",
+    "headlineEn":"",
+    "bulletsZh":["","",""],
+    "bulletsEn":["","",""],
+    "shortCaptionEn":""
+  }
+}`,
+    "",
+    "Rules:",
+    "- Stay inside absorbent-care / hygiene-product reality",
+    "- Use the uploaded images as evidence for category, packaging form, product silhouette, size lineup, and visible details",
+    "- If an input fact is not visible or clearly confirmed, phrase it conservatively instead of inventing",
+    "- Make the output ready for later use in a TikTok content generator",
+    "- Keep English commercially natural and Chinese concise but professional"
+  ].join("\n");
+}
+
+function buildCustomProductDraft(parsed,form,uploads){
+  const data=parsed&&typeof parsed==="object"?parsed:{};
+  return normalizeProductRecord({
+    englishName:data.englishName||form.englishName||form.chineseName||"Custom Product",
+    chineseName:data.chineseName||form.chineseName||"",
+    seriesLabelZh:data.seriesLabelZh||form.family||"扩展产品",
+    positioningZh:data.positioningZh||`${form.family||"扩展产品"} / ${form.chineseName||form.englishName||"新产品"}`,
+    category:data.category||form.category||"absorbent-care product",
+    audienceSummaryZh:data.audienceSummaryZh||form.audience||"核心用户待补充",
+    audienceSummaryEn:data.audienceSummaryEn||"",
+    audiences:normalizeAudienceList(data.audiences,form.audience||"核心用户",form.audience||"primary target users"),
+    scenariosZh:normalizeStringArray(data.scenariosZh,splitInputList(form.scenes)),
+    scenariosEn:normalizeStringArray(data.scenariosEn,[]),
+    keyPointsZh:normalizeStringArray(data.keyPointsZh,splitInputList(form.points)),
+    keyPointsEn:normalizeStringArray(data.keyPointsEn,[]),
+    specs:String(data.specs||"").trim(),
+    proof:String(data.proof||"").trim(),
+    vocabulary:normalizeStringArray(data.vocabulary,[]),
+    creativeAngles:normalizeStringArray(data.creativeAngles,[]),
+    safeScenes:normalizeStringArray(data.safeScenes,[]),
+    focus:String(data.focus||"Use this custom product brief and the bound images as the source of truth.").trim(),
+    focusZh:String(data.focusZh||"以后生成内容时，以这款自定义产品的图片和知识档为准。").trim(),
+    referenceImages:uploads.map((image,index)=>({
+      id:`custom_upload_${index+1}`,
+      source:"custom_upload",
+      name:image.name,
+      label:image.label||`用户上传图 ${index+1}`,
+      description:image.description||`用户上传的产品参考图：${image.name}`,
+      dataUrl:image.dataUrl,
+      aiUrl:image.aiUrl||image.dataUrl,
+      previewUrl:image.previewUrl||image.dataUrl
+    })),
+    sellingCopy:normalizeSellingCopy(data.sellingCopy)
+  },`draft_${Date.now()}`);
+}
+
+function formatExtensionDraft(product){
+  const sellingCopy=normalizeSellingCopy(product.sellingCopy);
+  const output=[
+    `产品：${product.label}`,
+    `定位：${product.positioningZh}`,
+    `核心人群：${product.audienceSummaryZh}`,
+    `主打场景：${(product.scenariosZh||[]).join("、")||"未生成"}`,
+    "",
+    "核心卖点：",
+    ...(product.keyPointsZh||[]).map((item,index)=>`${index+1}. ${item}`),
+    "",
+    "推荐内容角度：",
+    ...(product.creativeAngles||[]).map((item,index)=>`${index+1}. ${item}`),
+    "",
+    "推荐标题：",
+    `- 中文：${sellingCopy.headlineZh||"未生成"}`,
+    `- 英文：${sellingCopy.headlineEn||"Not generated"}`,
+    sellingCopy.shortCaptionEn?`- Caption：${sellingCopy.shortCaptionEn}`:"",
+    "",
+    "英文卖点：",
+    ...(product.keyPointsEn||[]).map((item,index)=>`${index+1}. ${item}`)
+  ].filter(Boolean);
+  if(sellingCopy.bulletsZh.length){
+    output.push("");
+    output.push("补充中文卖点短句：");
+    sellingCopy.bulletsZh.forEach((item,index)=>output.push(`${index+1}. ${item}`));
+  }
+  if(sellingCopy.bulletsEn.length){
+    output.push("");
+    output.push("Supplementary English bullets:");
+    sellingCopy.bulletsEn.forEach((item,index)=>output.push(`${index+1}. ${item}`));
+  }
+  return output.join("\n");
+}
+
+function renderExtensionDraft(product,metaText){
+  const outArea=document.getElementById("out-extension");
+  const outText=document.getElementById("out-extension-text");
+  const metaEl=document.getElementById("meta-extension");
+  outArea.style.display="block";
+  outText.textContent=formatExtensionDraft(product);
+  metaEl.textContent=metaText||"";
+  const summary=document.getElementById("x-draft-summary");
+  summary.classList.remove("hidden");
+  summary.innerHTML=[
+    `<strong>${escapeHtml(product.label)}</strong>`,
+    `定位：${escapeHtml(product.positioningZh)}`,
+    `核心人群：${escapeHtml(product.audienceSummaryZh)}`,
+    `主打场景：${escapeHtml((product.scenariosZh||[]).slice(0,3).join("、"))}`,
+    `已绑定图片：${getReferenceImages(product).length} 张`,
+    product.sellingCopy?.headlineZh?`推荐标题：${escapeHtml(product.sellingCopy.headlineZh)}`:""
+  ].filter(Boolean).join("<br>");
+  document.getElementById("btn-extension-save").disabled=false;
+  setExtensionStatus("结构化产品档已生成，可以保存到产品库。");
+}
+
+function slugifyName(value){
+  return String(value||"")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g,"_")
+    .replace(/^_+|_+$/g,"")
+    .slice(0,40);
+}
+
+function createCustomProductId(name){
+  const base=slugifyName(name)||`product_${Date.now()}`;
+  let candidate=`custom_${base}`;
+  let counter=2;
+  while(getProductById(candidate)){
+    candidate=`custom_${base}_${counter}`;
+    counter+=1;
+  }
+  return candidate;
+}
+
+async function generateExtensionProduct(){
+  const key=document.getElementById("apikey").value.trim();
+  if(!key.startsWith("sk-")){alert("请先填写有效的 OpenAI API Key");return;}
+  const form=collectExtensionForm();
+  if(!form){alert("请至少填写产品英文名或中文名");return;}
+  const model=document.getElementById("model-select").value;
+  const outArea=document.getElementById("out-extension");
+  const outText=document.getElementById("out-extension-text");
+  const metaEl=document.getElementById("meta-extension");
+  const btn=document.getElementById("btn-extension-generate");
+  outArea.style.display="block";
+  outText.textContent="正在分析产品信息与图片...";
+  metaEl.textContent=model;
+  btn.disabled=true;
+  document.getElementById("btn-extension-save").disabled=true;
+  lastExtensionDraft=null;
+  try{
+    const userContent=[{type:"text",text:buildExtensionPromptText(form)}];
+    extensionUploads.slice(0,IMAGE_MAX_ATTACHMENTS).forEach((image,index)=>{
+      userContent.push({type:"text",text:`Uploaded image ${index+1}: ${image.description||image.name}`});
+      if(image.aiUrl||image.dataUrl){
+        userContent.push({type:"image_url",image_url:{url:image.aiUrl||image.dataUrl}});
+      }
+    });
+    const startTime=Date.now();
+    const res=await fetch("https://api.openai.com/v1/chat/completions",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},
+      body:JSON.stringify({
+        model,
+        messages:[
+          {role:"system",content:buildExtensionSystemPrompt()},
+          {role:"user",content:userContent}
+        ],
+        response_format:{type:"json_object"},
+        temperature:TEMPERATURES.extension||0.5,
+        max_tokens:2200
+      })
+    });
+    const data=await res.json();
+    if(!res.ok){
+      throw new Error(data.error?.message||`HTTP ${res.status}`);
+    }
+    const rawText=data.choices?.[0]?.message?.content||"{}";
+    const parsed=JSON.parse(sanitizeJsonText(rawText));
+    lastExtensionDraft=buildCustomProductDraft(parsed,form,extensionUploads);
+    const elapsed=((Date.now()-startTime)/1000).toFixed(1);
+    renderExtensionDraft(lastExtensionDraft,`${model} · ${elapsed}s · 结构化扩展产品档`);
+    addGenerationHistory("extension_draft",lastExtensionDraft,formatExtensionDraft(lastExtensionDraft),`${model} · ${elapsed}s · 结构化扩展产品档`);
+  }catch(e){
+    outText.textContent="错误："+e.message;
+    metaEl.textContent="";
+    setExtensionStatus("生成失败，请检查输入或 API Key。",true);
+  }
+  btn.disabled=false;
+}
+
+function saveExtensionProduct(){
+  if(!lastExtensionDraft){alert("请先生成产品卖点文案");return;}
+  const productId=createCustomProductId(lastExtensionDraft.englishName||lastExtensionDraft.chineseName||"custom_product");
+  const savedProduct=normalizeProductRecord({
+    ...lastExtensionDraft,
+    optionLabel:`${lastExtensionDraft.seriesLabelZh||"扩展产品"} · ${lastExtensionDraft.englishName}`,
+    isCustom:true,
+    generatedAt:new Date().toISOString()
+  },productId);
+  CUSTOM_PRODUCTS[productId]=savedProduct;
+  persistCustomProducts();
+  addGenerationHistory("custom_product_saved",savedProduct,formatExtensionDraft(savedProduct),"saved to local custom product library");
+  initProductSelectors();
+  renderSavedProductsList();
+  document.getElementById("btn-extension-save").disabled=true;
+  setExtensionStatus(`已保存到产品库：${savedProduct.optionLabel}`);
+}
+
+function dataUrlToBase64(dataUrl){
+  const raw=String(dataUrl||"");
+  const marker=raw.indexOf(",");
+  return marker>=0?raw.slice(marker+1):raw;
+}
+
+function getDataUrlExtension(dataUrl){
+  const match=String(dataUrl||"").match(/^data:image\/([a-zA-Z0-9.+-]+);base64,/);
+  const ext=(match?.[1]||"png").toLowerCase();
+  if(ext==="jpeg")return "jpg";
+  if(ext.includes("svg"))return "svg";
+  if(ext.includes("webp"))return "webp";
+  if(ext.includes("gif"))return "gif";
+  return "png";
+}
+
+function sanitizePathSegment(value,fallback="item"){
+  return String(value||fallback)
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]+/g,"-")
+    .replace(/^-+|-+$/g,"")||fallback;
+}
+
+function normalizeRepoPath(folder,path){
+  const left=String(folder||"").replace(/^\/+|\/+$/g,"");
+  const right=String(path||"").replace(/^\/+|\/+$/g,"");
+  return [left,right].filter(Boolean).join("/");
+}
+
+function buildGitHubApiUrl(repo,path,branch){
+  return `https://api.github.com/repos/${repo}/contents/${encodeURIComponent(path).replace(/%2F/g,"/")}?ref=${encodeURIComponent(branch)}`;
+}
+
+function buildGitHubRawUrl(repo,branch,path){
+  return `https://raw.githubusercontent.com/${repo}/${branch}/${path}`;
+}
+
+async function fetchGitHubFileSha(repo,branch,path,token){
+  const res=await fetch(buildGitHubApiUrl(repo,path,branch),{
+    method:"GET",
+    headers:{
+      "Accept":"application/vnd.github+json",
+      "Authorization":`Bearer ${token}`
+    }
+  });
+  if(res.status===404)return null;
+  const data=await res.json();
+  if(!res.ok){
+    throw new Error(data.message||`GitHub GET failed: ${res.status}`);
+  }
+  return data.sha||null;
+}
+
+async function upsertGitHubFile({repo,branch,path,token,message,contentBase64}){
+  const sha=await fetchGitHubFileSha(repo,branch,path,token);
+  const res=await fetch(`https://api.github.com/repos/${repo}/contents/${encodeURIComponent(path).replace(/%2F/g,"/")}`,{
+    method:"PUT",
+    headers:{
+      "Accept":"application/vnd.github+json",
+      "Authorization":`Bearer ${token}`,
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+      message,
+      branch,
+      content:contentBase64,
+      ...(sha?{sha}:{})
+    })
+  });
+  const data=await res.json();
+  if(!res.ok){
+    throw new Error(data.message||`GitHub PUT failed: ${res.status}`);
+  }
+  return data;
+}
+
+function encodeUtf8Base64(text){
+  return btoa(unescape(encodeURIComponent(text)));
+}
+
+function buildGitHubSyncPayload(repo,branch,folder){
+  const exportedAt=new Date().toISOString();
+  const syncedProducts={};
+  const imageUploads=[];
+  Object.entries(CUSTOM_PRODUCTS).forEach(([productId,product])=>{
+    const cloned={
+      ...product,
+      referenceImages:[]
+    };
+    getReferenceImages(product).forEach((image,index)=>{
+      const dataUrl=image.dataUrl||image.aiUrl||"";
+      let githubPath="";
+      let githubRawUrl="";
+      if(dataUrl){
+        const ext=getDataUrlExtension(dataUrl);
+        githubPath=normalizeRepoPath(folder,`images/${sanitizePathSegment(productId)}/${index+1}.${ext}`);
+        githubRawUrl=buildGitHubRawUrl(repo,branch,githubPath);
+        imageUploads.push({
+          path:githubPath,
+          contentBase64:dataUrlToBase64(dataUrl),
+          message:`chore: sync image for ${productId}`
+        });
+      }
+      cloned.referenceImages.push({
+        id:image.id,
+        source:image.source,
+        name:image.name,
+        label:image.label,
+        description:image.description,
+        githubPath,
+        githubRawUrl,
+        previewUrl:githubRawUrl||image.previewUrl||"",
+        syncedAt:exportedAt
+      });
+    });
+    syncedProducts[productId]=cloned;
+  });
+  const manifest={
+    exportedAt,
+    customProductCount:Object.keys(CUSTOM_PRODUCTS).length,
+    generationHistoryCount:GENERATION_HISTORY.length,
+    repo,
+    branch,
+    folder
+  };
+  return {
+    manifest,
+    syncedProducts,
+    imageUploads,
+    historySnapshot:GENERATION_HISTORY
+  };
+}
+
+async function syncToGitHub(){
+  const repo=document.getElementById("gh-repo").value.trim();
+  const branch=document.getElementById("gh-branch").value.trim()||"main";
+  const folder=document.getElementById("gh-folder").value.trim()||"tk-content-workbench-data";
+  const token=document.getElementById("gh-token").value.trim();
+  if(!repo||!repo.includes("/")){alert("请填写 GitHub 仓库，格式如 owner/repo");return;}
+  if(!token){alert("请填写 GitHub Token");return;}
+  saveGitHubSettings();
+  const btn=document.getElementById("btn-github-sync");
+  btn.disabled=true;
+  try{
+    const payload=buildGitHubSyncPayload(repo,branch,folder);
+    setGitHubStatus(`正在同步到 ${repo}@${branch} ...`);
+    for(const image of payload.imageUploads){
+      await upsertGitHubFile({
+        repo,
+        branch,
+        path:image.path,
+        token,
+        message:image.message,
+        contentBase64:image.contentBase64
+      });
+    }
+    const productsPath=normalizeRepoPath(folder,"custom-products.json");
+    const historyPath=normalizeRepoPath(folder,"generation-history.json");
+    const manifestPath=normalizeRepoPath(folder,"manifest.json");
+    await upsertGitHubFile({
+      repo,
+      branch,
+      path:productsPath,
+      token,
+      message:"chore: sync custom products snapshot",
+      contentBase64:encodeUtf8Base64(JSON.stringify(payload.syncedProducts,null,2))
+    });
+    await upsertGitHubFile({
+      repo,
+      branch,
+      path:historyPath,
+      token,
+      message:"chore: sync content generation history",
+      contentBase64:encodeUtf8Base64(JSON.stringify(payload.historySnapshot,null,2))
+    });
+    await upsertGitHubFile({
+      repo,
+      branch,
+      path:manifestPath,
+      token,
+      message:"chore: sync content workbench manifest",
+      contentBase64:encodeUtf8Base64(JSON.stringify(payload.manifest,null,2))
+    });
+    setGitHubStatus(`同步完成：${Object.keys(CUSTOM_PRODUCTS).length} 个扩展产品、${GENERATION_HISTORY.length} 条生成记录、${payload.imageUploads.length} 张图片已推送到 ${repo}/${folder}`);
+  }catch(e){
+    setGitHubStatus(`GitHub 同步失败：${e.message}`,true);
+  }
+  btn.disabled=false;
+}
+
+function initExtensionTab(){
+  const uploadInput=document.getElementById("x-images");
+  if(uploadInput){
+    uploadInput.addEventListener("change",handleExtensionImageChange);
+  }
+  const importInput=document.getElementById("import-state-file");
+  if(importInput&&importInput.dataset.boundChange!=="1"){
+    importInput.addEventListener("change",handleImportStateChange);
+    importInput.dataset.boundChange="1";
+  }
+  renderExtensionUploads();
+  renderSavedProductsList();
+  fillGitHubSettings();
+  const settings=getGitHubSettings();
+  setGitHubStatus(settings.repo?`当前配置：${settings.repo} / ${settings.branch} / ${settings.folder}`:"还没有执行 GitHub 同步。仓库配置会保存在当前浏览器，方便下次继续同步。");
+}
+
+async function getMessages(type){
+  if(type==="script"){
+    const product=getSelectedProduct("s-sku");
+    if(!product)return null;
+    const audience=document.getElementById("s-audience").value;
+    const audienceLabel=getSelectedText("s-audience");
+    const scriptType=document.getElementById("s-type").value;
+    const duration=document.getElementById("s-dur").value;
+    const points=document.getElementById("s-points").value.trim();
+    const extra=document.getElementById("s-extra").value.trim();
+    return [
+      {
+        role:"system",
+        content:buildSystemPrompt(product,"You write category-specific short-video scripts that sound like a specialist merchandiser, performance marketer, and compliance reviewer working together.")
+      },
+      await buildUserMessage(product,[
+        `Create a ${duration} TikTok script for ${product.englishName}.`,
+        "Campaign inputs:",
+        `- Audience focus: ${audience}${audienceLabel?` (${audienceLabel})`:""}`,
+        `- Script style: ${scriptType}`,
+        `- User-added selling points: ${points||"none"}`,
+        `- Extra requirements: ${extra||"none"}`,
+        "",
+        "Required output:",
+        "1. Content angle: 1 sentence naming the audience tension and the product promise",
+        "2. Full English script with timestamp labels such as [0-3s]",
+        "3. Chinese translation line by line",
+        "4. Shooting notes per segment using only safe product, lifestyle, caregiver, nursery, or pet-owner visuals",
+        "5. English caption under 150 characters",
+        "6. 5 TikTok hashtags",
+        "7. Why this script is vertical: 3 bullets tied directly to the selected product brief",
+        "",
+        "Writing rules:",
+        `- Hook the viewer in the first 2-3 seconds with an angle rooted in these product truths: ${(product.creativeAngles||[]).join("; ")}`,
+        "- Use concrete category language, not generic ad-speak",
+        "- Keep English natural and the Chinese translation commercially accurate",
+        "- Weave in 2-3 approved product truths from the brief",
+        "- Respect the selected duration ruthlessly; 5-second and 10-second versions must use only 2-3 beats and one dominant promise",
+        "- Stay retail-ready, credible, and specific"
+      ].join("\n"))
+    ];
+  }
+
+  if(type==="variant"){
+    const product=getSelectedProduct("v-sku");
+    const base=document.getElementById("v-base").value.trim();
+    if(!product||!base)return null;
+    const count=document.getElementById("v-count").value;
+    const checks=Array.from(document.querySelectorAll("#v-checks input:checked")).map((c)=>c.value);
+    const dirMap={
+      hook:"replace the opening hook in the first 3 seconds",
+      cta:"replace the closing CTA",
+      tone:"adjust tone between casual and professional",
+      audience:"shift the audience perspective while keeping the product truth",
+      short:"compress into a 15-second test version"
+    };
+    const dirs=(checks.length?checks:["hook"]).map((c)=>dirMap[c]).join("; ");
+    return [
+      {
+        role:"system",
+        content:buildSystemPrompt(product,"You design A/B-test-ready script variants without drifting away from the selected product's true audience, claims, or buying triggers.")
+      },
+      await buildUserMessage(product,[
+        `Optimize this script for ${product.englishName}.`,
+        `Generate ${count} distinct variant(s).`,
+        `Testing directions: ${dirs}`,
+        "",
+        "Original script:",
+        "---",
+        base,
+        "---",
+        "",
+        "Required output for each variant:",
+        "- Variant name",
+        "- Test hypothesis: what audience trigger or buying tension is being tested",
+        "- Full English script with timestamps",
+        "- Why this angle fits this SKU",
+        "- Recommended test scenario",
+        "",
+        "Variant rules:",
+        `- Draw your angles from these approved directions: ${(product.creativeAngles||[]).join("; ")}`,
+        "- Keep product facts, specs, and proof points accurate",
+        "- Preserve compliance-safe euphemisms and avoid explicit imagery language",
+        "- Do not recycle the same hook with tiny wording changes"
+      ].join("\n"))
+    ];
+  }
+
+  if(type==="localize"){
+    const input=document.getElementById("l-input").value.trim();
+    if(!input)return null;
+    const product=getSelectedProduct("l-sku");
+    const market=document.getElementById("l-market").value;
+    const outputType=document.getElementById("l-type").value;
+    const tone=document.getElementById("l-tone").value;
+    return [
+      {
+        role:"system",
+        content:buildSystemPrompt(product,"You localize absorbent-care and hygiene-product content into natural retail language for the target market while preserving correct category terminology and compliance-safe phrasing.")
+      },
+      await buildUserMessage(product,[
+        `Localize the following content for ${market}.`,
+        `Output type: ${outputType}`,
+        `Target tone: ${tone}`,
+        `Selected product context: ${product?product.englishName:"not specified"}`,
+        "",
+        "Original content:",
+        "---",
+        input,
+        "---",
+        "",
+        "Requirements:",
+        "- Remove export-style wording and rewrite it into natural local-market English",
+        "- Keep the product's correct category terms and decision drivers",
+        "- Replace any words that sound too explicit or platform-risky with safer local expressions",
+        "- If a selected SKU provides specs, terminology, proof points, or packaging cues, keep them accurate",
+        "",
+        "Output:",
+        "1. Localized version",
+        "2. Terminology decisions",
+        "3. Risky terms replaced",
+        "4. Changes made: 2-4 bullets"
+      ].join("\n"))
+    ];
+  }
+
+  if(type==="editor"){
+    const product=getSelectedProduct("e-sku");
+    const script=document.getElementById("e-script").value.trim();
+    if(currentOuttype==="vo"){
+      if(!script)return null;
+      const lang=document.getElementById("e-vo-lang").value;
+      const pace=document.getElementById("e-vo-pace").value;
+      const emotion=document.getElementById("e-vo-emotion").value;
+      const variants=document.getElementById("e-vo-variants").value;
+      return [
+        {
+          role:"system",
+          content:buildSystemPrompt(product,"You turn product-aware short-form scripts into clean, paste-ready ElevenLabs voiceover copy while locking terminology and keeping the emotional delivery commercially usable.")
+        },
+        await buildUserMessage(product,[
+          "Prepare spoken-only voiceover variants for ElevenLabs.",
+          `Target accent: ${lang}`,
+          `Speaking pace: ${pace}`,
+          `Emotional style: ${emotion}`,
+          `Number of variants: ${variants}`,
+          `Selected product context: ${product?product.englishName:"infer from the source script only"}`,
+          "",
+          "Source script / storyboard:",
+          "---",
+          script,
+          "---",
+          "",
+          "Critical output rules:",
+          "- Output spoken words only: no timestamps, no scene directions, no camera instructions, no parenthetical notes",
+          "- Keep product facts accurate and consistent with the selected SKU brief when one is provided",
+          `- Preserve category vocabulary such as: ${product?(product.vocabulary||[]).join(", "):"infer the cleanest category terminology from the source text"}`,
+          "- Variants may change rhythm, emotional energy, and opening line intensity, but not the product truth",
+          "",
+          "Output format for each variant:",
+          "VARIANT [N] - [style label]",
+          "[Pure spoken voiceover text with natural line breaks]",
+          "",
+          "ELEVENLABS SETTINGS FOR THIS VARIANT:",
+          "- Recommended voice style",
+          "- Stability",
+          "- Similarity Boost",
+          "- Style Exaggeration",
+          "- Speaking Rate",
+          `- Estimated duration at ${pace}`,
+          "",
+          "After all variants add:",
+          "1. Pronunciation notes",
+          "2. Product terminology lock: list the product words that should stay consistent across all audio takes"
+        ].join("\n"))
+      ];
+    }
+
+    const scene=document.getElementById("e-scene").value;
+    const subtitles=document.getElementById("e-sub").value;
+    const bgm=document.getElementById("e-bgm").value;
+    const transitions=document.getElementById("e-trans").value;
+    return [
+      {
+        role:"system",
+        content:buildSystemPrompt(product,"You are a senior short-form producer creating CapCut-ready SOPs that translate product strategy into safe, shootable scenes and editing instructions.")
+      },
+      await buildUserMessage(product,[
+        "Build a TikTok editing SOP for a human editor.",
+        `Selected product context: ${product?product.englishName:"not specified"}`,
+        `Scene type: ${scene}`,
+        `Subtitle style: ${subtitles}`,
+        `BGM direction: ${bgm}`,
+        `Transition style: ${transitions}`,
+        script?`Shot list / source script:\n${script}`:"Shot list / source script: not provided",
+        "",
+        "Required output:",
+        "1. Creative brief: audience, promise, and safe visual direction in one short paragraph",
+        "2. Timeline SOP with time range, visual objective, recommended shot, subtitle copy, effect or motion, and transition",
+        "3. CapCut settings",
+        "4. 3 editor reminders tied to this product or scene type",
+        "5. Shots to avoid",
+        "",
+        "SOP rules:",
+        `- Prefer safe visual anchors such as: ${product?(product.safeScenes||[]).join("; "):"packaging shots, lifestyle scenes, reaction cuts, text overlays, and environment setups"}`,
+        "- Keep all visuals platform-safe and never suggest fluid, body-detail, or explicit before/after footage",
+        "- Make the visual logic feel specific to the selected product vertical rather than a generic hygiene product reel"
+      ].join("\n"))
+    ];
+  }
+
+  return null;
+}
+
+async function generate(type){
+  const key=document.getElementById("apikey").value.trim();
+  if(!key.startsWith("sk-")){alert("请先填写有效的 OpenAI API Key");return;}
+  const messages=await getMessages(type);
+  if(!messages){
+    if(type==="editor"&&currentOuttype==="vo"){alert("请填写原始脚本（必填）");}
+    else{alert("请填写必填项");}
+    return;
+  }
+  const model=document.getElementById("model-select").value;
+  const outArea=document.getElementById("out-"+type);
+  const outText=document.getElementById("out-"+type+"-text");
+  const metaEl=document.getElementById("meta-"+type);
+  const btn=document.getElementById("btn-"+type);
+  outArea.style.display="block";
+  outText.textContent="";
+  metaEl.textContent=model;
+  btn.disabled=true;
+  const cursor=document.createElement("span");
+  cursor.className="cursor";
+  outText.appendChild(cursor);
+  const startTime=Date.now();
+  let totalChars=0;
+  const selectedProductIdMap={script:"s-sku",variant:"v-sku",localize:"l-sku",editor:"e-sku"};
+  try{
+    const res=await fetch("https://api.openai.com/v1/chat/completions",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},
+      body:JSON.stringify({
+        model,
+        messages,
+        max_tokens:type==="editor"?2200:2000,
+        temperature:TEMPERATURES[type]||0.65,
+        stream:true
+      })
+    });
+    if(!res.ok){
+      const e=await res.json();
+      throw new Error(e.error?.message||"HTTP "+res.status);
+    }
+    const reader=res.body.getReader();
+    const decoder=new TextDecoder();
+    let buffer="";
+    while(true){
+      const {done,value}=await reader.read();
+      if(done)break;
+      buffer+=decoder.decode(value,{stream:true});
+      const lines=buffer.split("\n");
+      buffer=lines.pop();
+      for(const line of lines){
+        if(!line.startsWith("data: "))continue;
+        const data=line.slice(6).trim();
+        if(data==="[DONE]")continue;
+        try{
+          const json=JSON.parse(data);
+          const deltaRaw=json.choices?.[0]?.delta?.content||"";
+          const delta=Array.isArray(deltaRaw)?deltaRaw.map((part)=>part.text||"").join(""):deltaRaw;
+          if(delta){
+            totalChars+=delta.length;
+            outText.insertBefore(document.createTextNode(delta),cursor);
+            outText.scrollTop=outText.scrollHeight;
+          }
+        }catch{}
+      }
+    }
+    cursor.remove();
+    const elapsed=((Date.now()-startTime)/1000).toFixed(1);
+    metaEl.textContent=`${model} · ${elapsed}s · ${totalChars} chars`;
+    addGenerationHistory(type,getSelectedProduct(selectedProductIdMap[type]||""),outText.textContent,metaEl.textContent);
+  }catch(e){
+    cursor.remove();
+    outText.textContent="错误："+e.message;
+    metaEl.textContent="";
+  }
+  btn.disabled=false;
+}
+
+function copyOut(type){
+  const text=document.getElementById("out-"+type+"-text").textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn=document.querySelector("#out-"+type+" .copy-btn");
+    btn.textContent="已复制";
+    setTimeout(()=>btn.textContent="复制",1500);
+  });
+}
+
+updateModelCost();
+loadCustomProducts();
+loadGenerationHistory();
+initProductSelectors();
+initExtensionTab();
+switchOuttype("sop");
+</script>

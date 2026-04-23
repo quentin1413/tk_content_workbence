@@ -1,0 +1,13 @@
+~$*.docx
+*.docx
+Thumbs.db
+.DS_Store
+*.tmp
+*.log
+*.bak
+__tk_content_workbench_v5_check.js
+share_package/
+成人系列产品卖点梳理(3)/
+宠物系列产品卖点梳理(3)/
+母婴系列产品卖点梳理/
+女性系列产品卖点梳理/
