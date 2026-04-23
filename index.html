@@ -95,6 +95,7 @@ select,textarea{width:100%;margin-bottom:2px}
 .image-prompt-box{margin-top:12px;padding:12px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:#FBFCFD}
 .image-prompt-label{font-size:12px;font-weight:600;color:var(--color-text-secondary)}
 .image-prompt-text{margin-top:8px;font-size:12px;line-height:1.75;color:var(--color-text-primary);white-space:pre-wrap}
+.image-prompt-editor{width:100%;margin-top:8px;min-height:180px;font-size:12px;line-height:1.75;border-radius:var(--border-radius-md)}
 .image-prompt-tip{margin-top:8px;font-size:12px;line-height:1.6;color:#35506B}
 .image-gallery{margin-top:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
 .image-card{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);overflow:hidden;background:var(--color-background-primary)}
@@ -105,6 +106,13 @@ select,textarea{width:100%;margin-bottom:2px}
 .image-card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .image-small-btn{padding:6px 10px;border-radius:999px;border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);font-size:12px;cursor:pointer}
 .image-small-btn:hover{background:var(--color-background-secondary)}
+.gallery-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.saved-image-library{margin-top:14px;padding:12px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:#FBFCFD}
+.saved-image-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:10px}
+.saved-image-card{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);overflow:hidden;background:var(--color-background-primary)}
+.saved-image-thumb{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;background:linear-gradient(135deg,#F7F3EE,#E8EEF7)}
+.saved-image-meta{padding:8px 10px;font-size:12px;line-height:1.6;color:var(--color-text-secondary)}
+.cost-note{margin-top:8px;padding:9px 10px;background:#EFF6EE;border-radius:var(--border-radius-md);font-size:12px;color:#2F5A36;line-height:1.65;border:0.5px solid #D1E6D0}
 @media (max-width:760px){
   .hero-layout,.hero-stats,.setup-note,.row2,.row3,.ext-grid{grid-template-columns:1fr}
   .hero-shell{padding:18px}
@@ -388,6 +396,12 @@ select,textarea{width:100%;margin-bottom:2px}
         <select id="i-sku"></select>
         <div class="product-note hidden" id="i-knowledge"></div>
         <div class="product-media hidden" id="i-media"></div>
+        <label>提示词工作流</label>
+        <select id="i-prompt-mode">
+          <option value="auto_generate" selected>AI 自动生成，我再手动修改</option>
+          <option value="self_polish">我自己填写，AI 帮我润色</option>
+          <option value="direct_manual">我直接填写提示词（最低成本）</option>
+        </select>
         <label>画面目标</label>
         <select id="i-scene">
           <option value="studio hero packshot for ecommerce and TikTok thumbnail">电商主图 / Hero Packshot</option>
@@ -405,23 +419,40 @@ select,textarea{width:100%;margin-bottom:2px}
         </select>
       </div>
       <div>
+        <label>成本策略</label>
+        <select id="i-cost-preset" onchange="applyImageCostPreset()">
+          <option value="saver" selected>成本优先（推荐测试）</option>
+          <option value="balanced">平衡质量</option>
+          <option value="quality">高质量</option>
+        </select>
         <label>生图模型</label>
         <select id="i-model">
-          <option value="gpt-image-1.5" selected>gpt-image-1.5（推荐）</option>
-          <option value="gpt-image-1">gpt-image-1（稳妥）</option>
-          <option value="gpt-image-1-mini">gpt-image-1-mini（更省）</option>
+          <option value="gpt-image-1.5">gpt-image-1.5（高质量）</option>
+          <option value="gpt-image-1">gpt-image-1（平衡）</option>
+          <option value="gpt-image-1-mini" selected>gpt-image-1-mini（更省）</option>
+        </select>
+        <label>参考图策略</label>
+        <select id="i-ref-mode">
+          <option value="off" selected>关闭参考图（更省）</option>
+          <option value="auto">自动参考产品图（更稳）</option>
+        </select>
+        <label>输出格式</label>
+        <select id="i-format">
+          <option value="webp" selected>WEBP（更省存储）</option>
+          <option value="jpeg">JPEG</option>
+          <option value="png">PNG</option>
         </select>
         <label>画幅</label>
         <select id="i-size">
-          <option value="1024x1536" selected>竖版 2:3</option>
-          <option value="1024x1024">方图 1:1</option>
+          <option value="1024x1024" selected>方图 1:1</option>
+          <option value="1024x1536">竖版 2:3</option>
           <option value="1536x1024">横版 3:2</option>
         </select>
         <label>质量</label>
         <select id="i-quality">
-          <option value="high" selected>高质量</option>
+          <option value="low" selected>低质量</option>
           <option value="medium">中质量</option>
-          <option value="low">低质量</option>
+          <option value="high">高质量</option>
           <option value="auto">自动</option>
         </select>
         <label>生成数量</label>
@@ -434,17 +465,21 @@ select,textarea{width:100%;margin-bottom:2px}
     </div>
     <label>补充要求（可选）</label>
     <textarea id="i-extra" rows="4" placeholder="例：突出包装正面、背景更像欧美家庭浴室、不要出现夸张道具、适合做 TikTok 封面..."></textarea>
+    <div class="cost-note" id="image-cost-note">当前为成本优先：默认只生成 1 张、使用更省的模型与 WEBP 格式，并关闭参考图。先出小样测试方向，再决定是否提高质量。</div>
     <div class="image-note">AI 会先结合产品知识卡、参考图片、卖点和你填写的要求自动整理英文提示词，再调用官方图像模型生成。如果该 SKU 绑定了参考图，会优先把它们作为视觉参考输入。若提示模型不可用，可切换到 `gpt-image-1`，或检查组织是否已完成 OpenAI 所需验证。</div>
     <div class="compliance-note">⚠️ 生图提醒：默认规避液体展示、私密部位特写和医疗化视觉，只做安全、零售化、可投放的产品图。</div>
-    <button class="gen-btn" id="btn-image" onclick="generateProductImage()">生成图片</button>
+    <div class="gallery-toolbar">
+      <button class="secondary-btn" id="btn-image-prompt" onclick="prepareImagePrompt()">生成 / 润色提示词</button>
+      <button class="gen-btn" id="btn-image" style="margin-top:0" onclick="generateProductImage()">根据当前提示词生成图片</button>
+    </div>
 
-    <div class="image-prompt-box hidden" id="image-prompt-box">
+    <div class="image-prompt-box" id="image-prompt-box">
       <div class="output-header">
-        <span class="output-label">自动生成的提示词</span>
+        <span class="output-label">可编辑提示词工作区</span>
         <span class="output-meta" id="meta-image"></span>
         <button class="copy-btn" onclick="copyImagePrompt()">复制提示词</button>
       </div>
-      <div class="image-prompt-text" id="image-prompt-text"></div>
+      <textarea id="image-prompt-editor" class="image-prompt-editor" placeholder="你可以在这里直接修改提示词，或者先点上面的“生成 / 润色提示词”。"></textarea>
       <div class="image-prompt-tip" id="image-prompt-tip"></div>
     </div>
 
@@ -454,8 +489,20 @@ select,textarea{width:100%;margin-bottom:2px}
         <span class="output-meta" id="meta-image-gallery"></span>
       </div>
       <div class="output-content">
+        <div class="gallery-toolbar">
+          <button class="image-small-btn" type="button" onclick="downloadAllGeneratedImages()">导出本次全部图片</button>
+          <button class="image-small-btn" type="button" onclick="saveAllGeneratedImages()">本次全部存入图片库</button>
+        </div>
         <div class="image-gallery" id="image-gallery"></div>
       </div>
+    </div>
+
+    <div class="saved-image-library hidden" id="saved-image-library">
+      <div class="output-header">
+        <span class="output-label" id="saved-image-library-label">已保存图片库</span>
+        <span class="output-meta">保存在当前浏览器中，适合反复复用与下载</span>
+      </div>
+      <div class="saved-image-grid" id="saved-image-grid"></div>
     </div>
   </div>
 
@@ -1336,7 +1383,8 @@ const SELECT_MEDIA_MAP={"s-sku":"s-media","v-sku":"v-media","l-sku":"l-media","e
 const STORAGE_KEYS={
   customProducts:"tk_content_custom_products_v6",
   generationHistory:"tk_content_generation_history_v6",
-  githubSettings:"tk_content_github_settings_v1"
+  githubSettings:"tk_content_github_settings_v1",
+  savedImageLibrary:"tk_content_saved_images_v1"
 };
 const IMAGE_MAX_ATTACHMENTS=4;
 let CUSTOM_PRODUCTS={};
@@ -1346,6 +1394,7 @@ let lastExtensionDraft=null;
 let lastImagePromptDraft="";
 let lastImagePromptNote="";
 let lastGeneratedImages=[];
+let SAVED_IMAGE_LIBRARY=[];
 const imageDataUrlCache={};
 
 Object.entries(BUILT_IN_PRODUCT_MEDIA).forEach(([productId,images])=>{
@@ -1613,6 +1662,19 @@ function loadGenerationHistory(){
 
 function persistGenerationHistory(){
   localStorage.setItem(STORAGE_KEYS.generationHistory,JSON.stringify(GENERATION_HISTORY));
+}
+
+function loadSavedImageLibrary(){
+  try{
+    const raw=JSON.parse(localStorage.getItem(STORAGE_KEYS.savedImageLibrary)||"[]");
+    SAVED_IMAGE_LIBRARY=Array.isArray(raw)?raw:[];
+  }catch{
+    SAVED_IMAGE_LIBRARY=[];
+  }
+}
+
+function persistSavedImageLibrary(){
+  localStorage.setItem(STORAGE_KEYS.savedImageLibrary,JSON.stringify(SAVED_IMAGE_LIBRARY));
 }
 
 function addGenerationHistory(type,product,content,metaText){
@@ -1925,7 +1987,7 @@ function buildSystemPrompt(product,specialty){
   ].join("\n\n");
 }
 
-function renderImageToDataUrl(img,maxEdge=1400,quality=0.9){
+function renderImageToDataUrl(img,maxEdge=1400,quality=0.9,mimeType="image/jpeg"){
   const width=img.naturalWidth||img.width;
   const height=img.naturalHeight||img.height;
   if(!width||!height)return null;
@@ -1935,7 +1997,7 @@ function renderImageToDataUrl(img,maxEdge=1400,quality=0.9){
   canvas.height=Math.max(1,Math.round(height*scale));
   const ctx=canvas.getContext("2d");
   ctx.drawImage(img,0,0,canvas.width,canvas.height);
-  return canvas.toDataURL("image/jpeg",quality);
+  return canvas.toDataURL(mimeType,quality);
 }
 
 function readFileAsDataUrl(file){
@@ -1947,12 +2009,12 @@ function readFileAsDataUrl(file){
   });
 }
 
-function resizeDataUrl(dataUrl,maxEdge=1400,quality=0.9){
+function resizeDataUrl(dataUrl,maxEdge=1400,quality=0.9,mimeType="image/jpeg"){
   return new Promise((resolve)=>{
     const img=new Image();
     img.onload=()=>{
       try{
-        resolve(renderImageToDataUrl(img,maxEdge,quality)||dataUrl);
+        resolve(renderImageToDataUrl(img,maxEdge,quality,mimeType)||dataUrl);
       }catch{
         resolve(dataUrl);
       }
@@ -2052,14 +2114,85 @@ function buildFallbackImagePrompt(product,scene,style,size,extra){
   ].filter(Boolean).join(" ");
 }
 
+function getSelectedPromptMode(){
+  return document.getElementById("i-prompt-mode")?.value||"auto_generate";
+}
+
+function getCurrentImagePromptText(){
+  return document.getElementById("image-prompt-editor")?.value.trim()||"";
+}
+
+function setCurrentImagePromptText(text){
+  const editor=document.getElementById("image-prompt-editor");
+  if(editor)editor.value=String(text||"");
+}
+
+function getOutputMimeType(format){
+  const normalized=String(format||"png").toLowerCase();
+  if(normalized==="jpeg"||normalized==="jpg")return "image/jpeg";
+  if(normalized==="webp")return "image/webp";
+  return "image/png";
+}
+
+function getOutputExtension(format){
+  const normalized=String(format||"png").toLowerCase();
+  if(normalized==="jpeg")return "jpg";
+  return normalized==="webp"?"webp":"png";
+}
+
+function applyImageCostPreset(){
+  const preset=document.getElementById("i-cost-preset")?.value||"saver";
+  const model=document.getElementById("i-model");
+  const refMode=document.getElementById("i-ref-mode");
+  const format=document.getElementById("i-format");
+  const size=document.getElementById("i-size");
+  const quality=document.getElementById("i-quality");
+  const count=document.getElementById("i-count");
+  const note=document.getElementById("image-cost-note");
+  if(preset==="saver"){
+    if(model)model.value="gpt-image-1-mini";
+    if(refMode)refMode.value="off";
+    if(format)format.value="webp";
+    if(size)size.value="1024x1024";
+    if(quality)quality.value="low";
+    if(count)count.value="1";
+    if(note)note.textContent="当前为成本优先：默认只生成 1 张、使用更省的模型与 WEBP 格式，并关闭参考图。先出小样测试方向，再决定是否提高质量。";
+    return;
+  }
+  if(preset==="balanced"){
+    if(model)model.value="gpt-image-1";
+    if(refMode)refMode.value="auto";
+    if(format)format.value="webp";
+    if(size)size.value="1024x1536";
+    if(quality)quality.value="medium";
+    if(count)count.value="1";
+    if(note)note.textContent="当前为平衡质量：保留适度参考图和较稳的模型，适合确认方向后做一轮主视觉。";
+    return;
+  }
+  if(model)model.value="gpt-image-1.5";
+  if(refMode)refMode.value="auto";
+  if(format)format.value="png";
+  if(size)size.value="1024x1536";
+  if(quality)quality.value="high";
+  if(count)count.value="1";
+  if(note)note.textContent="当前为高质量：更适合最终定稿图，但建议先用成本优先跑通方向，再切到这个档位。";
+}
+
+function getPromptDraftingModel(){
+  const preset=document.getElementById("i-cost-preset")?.value||"saver";
+  if(preset==="quality"){
+    return document.getElementById("model-select")?.value||"gpt-4o-mini";
+  }
+  return "gpt-4o-mini";
+}
+
 function setImagePromptDisplay({promptText="",noteText="",metaText="",isVisible=false}={}){
   const box=document.getElementById("image-prompt-box");
-  const promptEl=document.getElementById("image-prompt-text");
   const tipEl=document.getElementById("image-prompt-tip");
   const metaEl=document.getElementById("meta-image");
-  if(!box||!promptEl||!tipEl||!metaEl)return;
+  if(!box||!tipEl||!metaEl)return;
   box.classList.toggle("hidden",!isVisible);
-  promptEl.textContent=promptText;
+  setCurrentImagePromptText(promptText);
   tipEl.textContent=noteText;
   metaEl.textContent=metaText;
 }
@@ -2074,8 +2207,9 @@ function setImageGalleryLoading(message){
 }
 
 function copyImagePrompt(){
-  if(!lastImagePromptDraft)return;
-  navigator.clipboard.writeText(lastImagePromptDraft).then(()=>{
+  const text=getCurrentImagePromptText();
+  if(!text)return;
+  navigator.clipboard.writeText(text).then(()=>{
     const btn=document.querySelector("#image-prompt-box .copy-btn");
     if(!btn)return;
     btn.textContent="已复制";
@@ -2094,6 +2228,88 @@ function downloadGeneratedImage(index){
   a.remove();
 }
 
+function downloadAllGeneratedImages(){
+  if(!lastGeneratedImages.length)return;
+  lastGeneratedImages.forEach((_,index)=>downloadGeneratedImage(index));
+}
+
+function downloadSavedImage(index){
+  const image=SAVED_IMAGE_LIBRARY[index];
+  if(!image)return;
+  const a=document.createElement("a");
+  a.href=image.dataUrl||"";
+  a.download=image.filename||`tk-saved-${index+1}.webp`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+function renderSavedImageLibrary(){
+  const wrap=document.getElementById("saved-image-library");
+  const label=document.getElementById("saved-image-library-label");
+  const grid=document.getElementById("saved-image-grid");
+  if(!wrap||!label||!grid)return;
+  if(!SAVED_IMAGE_LIBRARY.length){
+    wrap.classList.add("hidden");
+    grid.innerHTML="";
+    return;
+  }
+  wrap.classList.remove("hidden");
+  label.textContent=`已保存图片库（${SAVED_IMAGE_LIBRARY.length}）`;
+  grid.innerHTML=SAVED_IMAGE_LIBRARY.map((image,index)=>`
+    <div class="saved-image-card">
+      <img class="saved-image-thumb" src="${escapeHtml(image.dataUrl||"")}" alt="${escapeHtml(image.productLabel||`已保存图片 ${index+1}`)}" loading="lazy">
+      <div class="saved-image-meta">
+        <strong>${escapeHtml(image.productLabel||`已保存图片 ${index+1}`)}</strong><br>
+        ${escapeHtml(image.metaText||"")}
+        <div class="image-card-actions">
+          <button class="image-small-btn" type="button" onclick="downloadSavedImage(${index})">下载</button>
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
+async function compressGeneratedImageForStorage(dataUrl){
+  return resizeDataUrl(dataUrl,900,0.8,"image/webp");
+}
+
+async function saveGeneratedImage(index){
+  const image=lastGeneratedImages[index];
+  const product=getSelectedProduct("i-sku");
+  if(!image||!product)return;
+  const dataUrl=image.dataUrl||"";
+  if(!dataUrl){
+    alert("当前图片无法直接保存到本地图库，请先下载后手动保留。");
+    return;
+  }
+  const compressed=await compressGeneratedImageForStorage(dataUrl);
+  SAVED_IMAGE_LIBRARY.unshift({
+    id:`saved_img_${Date.now()}_${index+1}`,
+    productId:product.id,
+    productLabel:product.label,
+    dataUrl:compressed,
+    filename:(image.filename||`tk-generated-${index+1}.png`).replace(/\.[^.]+$/,".webp"),
+    metaText:[image.model,image.size,image.quality].filter(Boolean).join(" / "),
+    prompt:getCurrentImagePromptText(),
+    createdAt:new Date().toISOString()
+  });
+  SAVED_IMAGE_LIBRARY=SAVED_IMAGE_LIBRARY.slice(0,12);
+  try{
+    persistSavedImageLibrary();
+    renderSavedImageLibrary();
+  }catch(e){
+    SAVED_IMAGE_LIBRARY.shift();
+    alert(`保存失败：${e.message || "浏览器本地存储空间不足"}`);
+  }
+}
+
+async function saveAllGeneratedImages(){
+  for(let i=0;i<lastGeneratedImages.length;i+=1){
+    await saveGeneratedImage(i);
+  }
+}
+
 function renderGeneratedImages(images,metaText){
   const outArea=document.getElementById("out-image");
   const gallery=document.getElementById("image-gallery");
@@ -2109,6 +2325,7 @@ function renderGeneratedImages(images,metaText){
         <div class="image-card-meta">${escapeHtml(image.caption||"可直接用于详情页主图、短视频封面或二次剪辑素材。")}</div>
         <div class="image-card-actions">
           <button class="image-small-btn" type="button" onclick="downloadGeneratedImage(${index})">下载图片</button>
+          <button class="image-small-btn" type="button" onclick="saveGeneratedImage(${index})">存入图片库</button>
         </div>
       </div>
     </div>
@@ -2120,8 +2337,8 @@ async function dataUrlToBlob(dataUrl){
   return res.blob();
 }
 
-async function getReferenceImagePayload(product){
-  const images=getReferenceImages(product).slice(0,IMAGE_MAX_ATTACHMENTS);
+async function getReferenceImagePayload(product,limit=IMAGE_MAX_ATTACHMENTS){
+  const images=getReferenceImages(product).slice(0,limit);
   const refs=[];
   for(let i=0;i<images.length;i+=1){
     const image=images[i];
@@ -2137,15 +2354,33 @@ async function getReferenceImagePayload(product){
   return refs;
 }
 
-async function buildImagePromptDraft(product,key){
-  const textModel=document.getElementById("model-select").value;
+async function buildImagePromptDraft(product,key,mode){
+  const textModel=getPromptDraftingModel();
   const scene=document.getElementById("i-scene").value;
   const style=document.getElementById("i-style").value;
   const size=document.getElementById("i-size").value;
   const extra=document.getElementById("i-extra").value.trim();
-  const fallbackPrompt=buildFallbackImagePrompt(product,scene,style,size,extra);
+  const manualPrompt=getCurrentImagePromptText();
+  const fallbackPrompt=manualPrompt||buildFallbackImagePrompt(product,scene,style,size,extra);
   try{
     const startTime=Date.now();
+    const userBrief=mode==="self_polish"
+      ? [
+          `Polish and professionalize this user-written prompt for ${product?.englishName||"the selected product"}.`,
+          "Keep the user's creative intention, but rewrite it into cleaner, more controllable image-generation English.",
+          "",
+          "User draft prompt:",
+          "---",
+          manualPrompt||fallbackPrompt,
+          "---"
+        ].join("\n")
+      : [
+          `Create one polished English image-generation prompt for ${product?.englishName||"the selected product"}.`,
+          `Image goal: ${scene}`,
+          `Visual direction: ${style}`,
+          `Target composition: ${formatImageSizeLabel(size)}`,
+          `Extra requirements: ${extra||"none"}`
+        ].join("\n");
     const res=await fetch("https://api.openai.com/v1/chat/completions",{
       method:"POST",
       headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},
@@ -2157,11 +2392,7 @@ async function buildImagePromptDraft(product,key){
             content:buildSystemPrompt(product,"You are a senior ecommerce art director and prompt engineer creating production-ready prompts for OpenAI image generation. Your prompts must preserve product truth, packaging realism, and platform-safe retail presentation.")
           },
           await buildUserMessage(product,[
-            `Create one polished English image-generation prompt for ${product?.englishName||"the selected product"}.`,
-            `Image goal: ${scene}`,
-            `Visual direction: ${style}`,
-            `Target composition: ${formatImageSizeLabel(size)}`,
-            `Extra requirements: ${extra||"none"}`,
+            userBrief,
             "",
             "Prompt rules:",
             "- Keep the selected product and its packaging as the clear hero",
@@ -2172,7 +2403,7 @@ async function buildImagePromptDraft(product,key){
             "",
             "Return JSON only with these keys:",
             "- image_prompt: one final English prompt under 220 words",
-            "- short_rationale: one short Chinese sentence explaining why this prompt fits the SKU",
+            "- short_rationale: one short Chinese sentence explaining why this prompt fits the SKU or how it improved the user's draft",
             "- safe_checks: an array of exactly 3 short Chinese checks"
           ].join("\n"))
         ],
@@ -2200,29 +2431,46 @@ async function buildImagePromptDraft(product,key){
   }catch{
     return {
       prompt:fallbackPrompt,
-      rationale:"已使用内置产品知识和参考图生成稳定版提示词。",
+      rationale:mode==="self_polish"?"AI 润色失败，已保留你的原始提示词。":"已使用内置产品知识和参考图生成稳定版提示词。",
       safeChecks:["聚焦包装与产品主体","避免露骨或医疗化画面","保持零售化、平台安全的场景表达"],
       metaText:`${textModel} 拟稿失败，已切换到内置提示词`
     };
   }
 }
 
-async function generateProductImage(){
+async function prepareImagePrompt(){
   const key=document.getElementById("apikey").value.trim();
   if(!key.startsWith("sk-")){alert("请先填写有效的 OpenAI API Key");return;}
   const product=getSelectedProduct("i-sku");
   if(!product){alert("请先选择产品 SKU");return;}
-  const imageModel=document.getElementById("i-model").value;
-  const size=document.getElementById("i-size").value;
-  const quality=document.getElementById("i-quality").value;
-  const count=Math.max(1,Math.min(3,Number(document.getElementById("i-count").value)||1));
-  const btn=document.getElementById("btn-image");
+  const mode=getSelectedPromptMode();
+  if(mode==="direct_manual"){
+    const manualPrompt=getCurrentImagePromptText()||buildFallbackImagePrompt(
+      product,
+      document.getElementById("i-scene").value,
+      document.getElementById("i-style").value,
+      document.getElementById("i-size").value,
+      document.getElementById("i-extra").value.trim()
+    );
+    lastImagePromptDraft=manualPrompt;
+    lastImagePromptNote="当前是直接手写提示词模式，不额外消耗提示词润色成本。";
+    setImagePromptDisplay({
+      promptText:lastImagePromptDraft,
+      noteText:lastImagePromptNote,
+      metaText:"手写提示词模式",
+      isVisible:true
+    });
+    return;
+  }
+  if(mode==="self_polish"&&!getCurrentImagePromptText()){
+    alert("请先在提示词工作区里输入你的原始提示词，再点润色。");
+    return;
+  }
+  const btn=document.getElementById("btn-image-prompt");
   btn.disabled=true;
-  lastGeneratedImages=[];
-  setImagePromptDisplay({promptText:"正在结合产品资料与参考图生成提示词...",noteText:"",metaText:"",isVisible:true});
-  setImageGalleryLoading("正在调用图像模型生成图片，请稍候...");
+  setImagePromptDisplay({promptText:getCurrentImagePromptText()||"正在处理提示词...",noteText:"",metaText:"",isVisible:true});
   try{
-    const promptDraft=await buildImagePromptDraft(product,key);
+    const promptDraft=await buildImagePromptDraft(product,key,mode);
     lastImagePromptDraft=promptDraft.prompt;
     lastImagePromptNote=[
       promptDraft.rationale,
@@ -2234,19 +2482,54 @@ async function generateProductImage(){
       metaText:promptDraft.metaText,
       isVisible:true
     });
+  }finally{
+    btn.disabled=false;
+  }
+}
 
-    const references=await getReferenceImagePayload(product);
+async function generateProductImage(){
+  const key=document.getElementById("apikey").value.trim();
+  if(!key.startsWith("sk-")){alert("请先填写有效的 OpenAI API Key");return;}
+  const product=getSelectedProduct("i-sku");
+  if(!product){alert("请先选择产品 SKU");return;}
+  let promptText=getCurrentImagePromptText();
+  if(!promptText){
+    await prepareImagePrompt();
+    promptText=getCurrentImagePromptText();
+  }
+  if(!promptText){alert("请先生成、润色或填写提示词");return;}
+  const imageModel=document.getElementById("i-model").value;
+  const size=document.getElementById("i-size").value;
+  const quality=document.getElementById("i-quality").value;
+  const count=Math.max(1,Math.min(3,Number(document.getElementById("i-count").value)||1));
+  const outputFormat=document.getElementById("i-format").value;
+  const refMode=document.getElementById("i-ref-mode").value;
+  const btn=document.getElementById("btn-image");
+  btn.disabled=true;
+  lastGeneratedImages=[];
+  lastImagePromptDraft=promptText;
+  setImagePromptDisplay({
+    promptText,
+    noteText:lastImagePromptNote,
+    metaText:document.getElementById("meta-image")?.textContent||"",
+    isVisible:true
+  });
+  setImageGalleryLoading("正在调用图像模型生成图片，请稍候...");
+  try{
+    const maxRefCount=(document.getElementById("i-cost-preset")?.value||"saver")==="quality"?2:1;
+    const references=refMode==="auto"?await getReferenceImagePayload(product,maxRefCount):[];
+
     const startTime=Date.now();
     let res;
     let data;
     if(references.length){
       const formData=new FormData();
       formData.append("model",imageModel);
-      formData.append("prompt",lastImagePromptDraft);
+      formData.append("prompt",promptText);
       formData.append("size",size);
       formData.append("quality",quality);
       formData.append("n",String(count));
-      formData.append("output_format","png");
+      formData.append("output_format",outputFormat);
       references.forEach((ref)=>formData.append("image[]",ref.blob,ref.filename));
       res=await fetch("https://api.openai.com/v1/images/edits",{
         method:"POST",
@@ -2260,11 +2543,11 @@ async function generateProductImage(){
         headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},
         body:JSON.stringify({
           model:imageModel,
-          prompt:lastImagePromptDraft,
+          prompt:promptText,
           size,
           quality,
           n:count,
-          output_format:"png"
+          output_format:outputFormat
         })
       });
       data=await res.json();
@@ -2272,26 +2555,32 @@ async function generateProductImage(){
     if(!res.ok){
       throw new Error(data.error?.message||`HTTP ${res.status}`);
     }
+    const outputMime=getOutputMimeType(outputFormat);
+    const outputExt=getOutputExtension(outputFormat);
     const images=(Array.isArray(data.data)?data.data:[]).map((item,index)=>({
-      dataUrl:item.b64_json?`data:image/png;base64,${item.b64_json}`:"",
+      dataUrl:item.b64_json?`data:${outputMime};base64,${item.b64_json}`:"",
       url:String(item.url||""),
-      filename:`${sanitizePathSegment(product.englishName||"product","product")}-${Date.now()}-${index+1}.png`,
+      filename:`${sanitizePathSegment(product.englishName||"product","product")}-${Date.now()}-${index+1}.${outputExt}`,
       alt:`${product.englishName} generated visual ${index+1}`,
-      caption:references.length?`已参考 ${references.length} 张产品图进行生成。`:"基于产品卖点与自动提示词直接生成。"
+      caption:references.length?`已参考 ${references.length} 张产品图进行生成。`:"基于当前可编辑提示词直接生成。",
+      model:imageModel,
+      size,
+      quality,
+      outputFormat
     })).filter((item)=>item.dataUrl||item.url);
     if(!images.length){
       throw new Error("图片接口未返回可展示的图片结果");
     }
     lastGeneratedImages=images;
     const elapsed=((Date.now()-startTime)/1000).toFixed(1);
-    renderGeneratedImages(images,`${imageModel} · ${elapsed}s · ${images.length} 张 · ${references.length} 张参考图`);
+    renderGeneratedImages(images,`${imageModel} · ${elapsed}s · ${images.length} 张 · ${references.length} 张参考图 · ${outputFormat.toUpperCase()}`);
     addGenerationHistory("image_generation",product,[
       `Image prompt for ${product.englishName}:`,
-      lastImagePromptDraft,
+      promptText,
       "",
       lastImagePromptNote,
       "",
-      `Image settings: ${imageModel} / ${size} / ${quality} / ${images.length} image(s) / ${references.length} reference image(s)`
+      `Image settings: ${imageModel} / ${size} / ${quality} / ${outputFormat} / ${images.length} image(s) / ${references.length} reference image(s)`
     ].filter(Boolean).join("\n"),`${imageModel} · ${elapsed}s · ${images.length} 张`);
   }catch(e){
     setImageGalleryLoading(`生图失败：${e.message}`);
@@ -3148,8 +3437,11 @@ updateModelCost();
 document.title="TK Vertical Content Studio";
 loadCustomProducts();
 loadGenerationHistory();
+loadSavedImageLibrary();
 initProductSelectors();
 initExtensionTab();
+applyImageCostPreset();
+renderSavedImageLibrary();
 switchOuttype("sop");
 renderWorkspaceStats();
 </script>
