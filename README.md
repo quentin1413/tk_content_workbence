@@ -12,6 +12,11 @@
 - 可编辑提示词工作流、图片批量导出与本地图片库
 - 云端接收同步（Webhook，可接你自己的云端/中间层）
 
+如果你想把所有用户提交自动沉淀到你自己的 GitHub 数据仓库，配套接收器模板见：
+
+- `receiver/github-data-receiver-worker.js`
+- `receiver/README.md`
+
 ## 当前目录包含什么
 
 - `index.html`

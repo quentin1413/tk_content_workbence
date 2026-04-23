@@ -601,7 +601,7 @@ select,textarea{width:100%;margin-bottom:2px}
     </div>
 
     <div class="github-box">
-      <h3>云端接收同步</h3>
+      <h3>你的 GitHub 数据仓库接收</h3>
       <div class="ext-grid">
         <div>
           <label>接收地址（Webhook）</label>
@@ -616,7 +616,7 @@ select,textarea{width:100%;margin-bottom:2px}
           <input class="text-input" id="owner-sync-note" type="text" placeholder="例：首轮试产素材 / 第2次提报">
         </div>
       </div>
-      <div class="field-note">这里是通用接收口。前端会把扩展产品、文案历史、AI 图片库一并打包 POST 到你的云端接收地址。你可以让这个地址再转存到数据库、对象存储、钉钉云盘或企业内部系统。</div>
+      <div class="field-note">推荐做法：这里填一个超低成本的 Cloudflare Worker 接收地址。前端会把扩展产品、文案历史、AI 图片库一并打包 POST 过去，再由 Worker 写入你自己的 GitHub 数据仓库。</div>
       <div class="github-actions">
         <button class="gen-btn" id="btn-owner-sync" onclick="syncToOwnerCloud()">同步到你的云端</button>
         <button class="secondary-btn" onclick="saveOwnerSyncSettings()">保存接收配置</button>
