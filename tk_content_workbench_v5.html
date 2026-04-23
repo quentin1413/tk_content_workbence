@@ -24,6 +24,8 @@
 .hero-step-desc{margin-top:4px;font-size:12px;line-height:1.65;color:rgba(255,255,255,0.82)}
 .hero-stats{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:18px}
 .hero-stat{padding:12px 14px;border-radius:18px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.14)}
+.hero-stat.is-clickable{cursor:pointer;transition:transform .16s ease,background .16s ease,border-color .16s ease}
+.hero-stat.is-clickable:hover{transform:translateY(-2px);background:rgba(255,255,255,0.18);border-color:rgba(255,255,255,0.28)}
 .hero-stat-value{display:block;font-size:24px;font-weight:700;letter-spacing:-0.03em}
 .hero-stat-label{display:block;margin-top:4px;font-size:12px;color:rgba(255,255,255,0.85)}
 .api-bar{display:flex;gap:8px;align-items:center;margin-bottom:1.25rem;padding:10px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);flex-wrap:wrap}
@@ -113,6 +115,18 @@ select,textarea{width:100%;margin-bottom:2px}
 .saved-image-thumb{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;background:linear-gradient(135deg,#F7F3EE,#E8EEF7)}
 .saved-image-meta{padding:8px 10px;font-size:12px;line-height:1.6;color:var(--color-text-secondary)}
 .cost-note{margin-top:8px;padding:9px 10px;background:#EFF6EE;border-radius:var(--border-radius-md);font-size:12px;color:#2F5A36;line-height:1.65;border:0.5px solid #D1E6D0}
+.detail-overlay{position:fixed;inset:0;background:rgba(14,28,40,0.52);display:none;align-items:center;justify-content:center;padding:18px;z-index:9999}
+.detail-overlay.active{display:flex}
+.detail-panel{width:min(920px,100%);max-height:82vh;overflow:hidden;border-radius:20px;background:#fff;border:1px solid #D8E1EA;box-shadow:0 18px 48px rgba(17,37,53,0.22)}
+.detail-panel-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #E5ECF2;background:#F8FBFD}
+.detail-panel-title{font-size:16px;font-weight:700;color:#17324D}
+.detail-panel-close{padding:6px 10px;border-radius:999px;border:1px solid #CCD9E4;background:transparent;color:#35506B;cursor:pointer}
+.detail-panel-body{padding:14px 16px;max-height:calc(82vh - 64px);overflow-y:auto}
+.detail-list{display:grid;gap:10px}
+.detail-item{padding:12px;border-radius:16px;background:#FBFCFD;border:1px solid #E1E8EF}
+.detail-item-title{font-size:13px;font-weight:700;color:#17324D}
+.detail-item-meta{margin-top:6px;font-size:12px;line-height:1.7;color:#35506B}
+.detail-empty{padding:18px;border-radius:16px;background:#FBFCFD;border:1px dashed #D5DEE8;font-size:12px;color:#5A6F83}
 @media (max-width:760px){
   .hero-layout,.hero-stats,.setup-note,.row2,.row3,.ext-grid{grid-template-columns:1fr}
   .hero-shell{padding:18px}
@@ -162,15 +176,15 @@ select,textarea{width:100%;margin-bottom:2px}
       </div>
     </div>
     <div class="hero-stats">
-      <div class="hero-stat">
+      <div class="hero-stat is-clickable" onclick="openWorkspaceDetail('built_in')">
         <span class="hero-stat-value" id="hero-built-in-count">0</span>
         <span class="hero-stat-label">内置产品条目</span>
       </div>
-      <div class="hero-stat">
+      <div class="hero-stat is-clickable" onclick="openWorkspaceDetail('custom')">
         <span class="hero-stat-value" id="hero-custom-count">0</span>
         <span class="hero-stat-label">扩展产品沉淀</span>
       </div>
-      <div class="hero-stat">
+      <div class="hero-stat is-clickable" onclick="openWorkspaceDetail('history')">
         <span class="hero-stat-value" id="hero-history-count">0</span>
         <span class="hero-stat-label">本地生成记录</span>
       </div>
@@ -501,6 +515,7 @@ select,textarea{width:100%;margin-bottom:2px}
       <div class="output-header">
         <span class="output-label" id="saved-image-library-label">已保存图片库</span>
         <span class="output-meta">保存在当前浏览器中，适合反复复用与下载</span>
+        <button class="copy-btn" type="button" onclick="downloadSavedImageLibrary()">批量导出图片库</button>
       </div>
       <div class="saved-image-grid" id="saved-image-grid"></div>
     </div>
@@ -585,10 +600,44 @@ select,textarea{width:100%;margin-bottom:2px}
       <div class="field-note">如果你要把工具交给别人，可以把 `html + assets 文件夹 + 导出的 json` 一起发给对方。对方导入后就能拿到扩展产品库和生成历史。</div>
     </div>
 
+    <div class="github-box">
+      <h3>云端接收同步</h3>
+      <div class="ext-grid">
+        <div>
+          <label>接收地址（Webhook）</label>
+          <input class="text-input" id="owner-sync-url" type="text" placeholder="例：https://your-domain.com/api/tk-sync">
+          <label>接收密钥（可选）</label>
+          <input class="text-input" id="owner-sync-key" type="password" placeholder="可选，用于后端校验">
+        </div>
+        <div>
+          <label>提交人 / 设备标识</label>
+          <input class="text-input" id="owner-sync-actor" type="text" placeholder="例：客户A-广州店 / iPhone 15">
+          <label>同步说明</label>
+          <input class="text-input" id="owner-sync-note" type="text" placeholder="例：首轮试产素材 / 第2次提报">
+        </div>
+      </div>
+      <div class="field-note">这里是通用接收口。前端会把扩展产品、文案历史、AI 图片库一并打包 POST 到你的云端接收地址。你可以让这个地址再转存到数据库、对象存储、钉钉云盘或企业内部系统。</div>
+      <div class="github-actions">
+        <button class="gen-btn" id="btn-owner-sync" onclick="syncToOwnerCloud()">同步到你的云端</button>
+        <button class="secondary-btn" onclick="saveOwnerSyncSettings()">保存接收配置</button>
+      </div>
+      <div class="github-status" id="owner-sync-status">还没有执行云端接收同步。配置会保存在当前浏览器，方便用户下次继续提交。</div>
+    </div>
+
     <div class="output-area" id="out-extension">
       <div class="output-header"><span class="output-label">扩展产品档</span><span class="output-meta" id="meta-extension"></span><button class="copy-btn" onclick="copyOut('extension')">复制</button></div>
       <div class="output-content" id="out-extension-text"></div>
     </div>
+  </div>
+</div>
+
+<div class="detail-overlay" id="detail-overlay" onclick="if(event.target===this)closeWorkspaceDetail()">
+  <div class="detail-panel">
+    <div class="detail-panel-head">
+      <div class="detail-panel-title" id="detail-panel-title">详情</div>
+      <button class="detail-panel-close" type="button" onclick="closeWorkspaceDetail()">关闭</button>
+    </div>
+    <div class="detail-panel-body" id="detail-panel-body"></div>
   </div>
 </div>
 
@@ -1384,7 +1433,8 @@ const STORAGE_KEYS={
   customProducts:"tk_content_custom_products_v6",
   generationHistory:"tk_content_generation_history_v6",
   githubSettings:"tk_content_github_settings_v1",
-  savedImageLibrary:"tk_content_saved_images_v1"
+  savedImageLibrary:"tk_content_saved_images_v1",
+  ownerSyncSettings:"tk_content_owner_sync_v1"
 };
 const IMAGE_MAX_ATTACHMENTS=4;
 let CUSTOM_PRODUCTS={};
@@ -1455,6 +1505,72 @@ function jumpToShareHub(){
   activateTab("extension");
   const target=document.querySelector(".github-box");
   if(target)target.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function closeWorkspaceDetail(){
+  const overlay=document.getElementById("detail-overlay");
+  if(overlay)overlay.classList.remove("active");
+}
+
+function buildWorkspaceDetailItems(kind){
+  if(kind==="built_in"){
+    return Object.values(PRODUCT_LIBRARY).map((product)=>({
+      title:product.label,
+      meta:[
+        `定位：${escapeHtml(product.positioningZh)}`,
+        `人群：${escapeHtml(product.audienceSummaryZh)}`,
+        `场景：${escapeHtml((product.scenariosZh||[]).slice(0,3).join("、"))}`,
+        `卖点：${escapeHtml((product.keyPointsZh||[]).slice(0,3).join("、"))}`
+      ].join("<br>")
+    }));
+  }
+  if(kind==="custom"){
+    return Object.values(CUSTOM_PRODUCTS).map((product)=>({
+      title:product.label,
+      meta:[
+        `系列：${escapeHtml(product.seriesLabelZh||"扩展产品")}`,
+        `定位：${escapeHtml(product.positioningZh||product.category||"")}`,
+        `场景：${escapeHtml((product.scenariosZh||[]).slice(0,3).join("、")||"未填写")}`,
+        `卖点：${escapeHtml((product.keyPointsZh||[]).slice(0,3).join("、")||"未填写")}`
+      ].join("<br>")
+    }));
+  }
+  if(kind==="history"){
+    return GENERATION_HISTORY.map((item)=>({
+      title:`${item.productLabel||"未指定产品"} · ${item.type}`,
+      meta:[
+        `时间：${escapeHtml(new Date(item.createdAt).toLocaleString("zh-CN"))}`,
+        item.metaText?`Meta：${escapeHtml(item.metaText)}`:"",
+        `内容预览：${escapeHtml(String(item.content||"").slice(0,220))}${String(item.content||"").length>220?"...":""}`
+      ].filter(Boolean).join("<br>")
+    }));
+  }
+  return [];
+}
+
+function openWorkspaceDetail(kind){
+  const titleMap={
+    built_in:"内置产品条目详情",
+    custom:"扩展产品详情",
+    history:"本地生成记录详情"
+  };
+  const titleEl=document.getElementById("detail-panel-title");
+  const bodyEl=document.getElementById("detail-panel-body");
+  const overlay=document.getElementById("detail-overlay");
+  if(!titleEl||!bodyEl||!overlay)return;
+  titleEl.textContent=titleMap[kind]||"详情";
+  const items=buildWorkspaceDetailItems(kind);
+  if(!items.length){
+    bodyEl.innerHTML=`<div class="detail-empty">当前还没有可展示的详情数据。</div>`;
+  }else{
+    bodyEl.innerHTML=`<div class="detail-list">${items.map((item)=>`
+      <div class="detail-item">
+        <div class="detail-item-title">${escapeHtml(item.title)}</div>
+        <div class="detail-item-meta">${item.meta}</div>
+      </div>
+    `).join("")}</div>`;
+  }
+  overlay.classList.add("active");
 }
 
 function switchOuttype(type){
@@ -1708,15 +1824,22 @@ function downloadTextFile(filename,text,mimeType="application/json"){
 
 function buildWorkbenchExportSnapshot(){
   const githubSettings=getGitHubSettings();
+  const ownerSyncSettings=getOwnerSyncSettings();
   return {
     version:"tk_content_workbench_share_v1",
     exportedAt:new Date().toISOString(),
     customProducts:CUSTOM_PRODUCTS,
     generationHistory:GENERATION_HISTORY,
+    savedImageLibrary:SAVED_IMAGE_LIBRARY,
     githubSettings:{
       repo:githubSettings.repo,
       branch:githubSettings.branch,
       folder:githubSettings.folder
+    },
+    ownerSyncSettings:{
+      url:ownerSyncSettings.url,
+      actor:ownerSyncSettings.actor,
+      note:ownerSyncSettings.note
     }
   };
 }
@@ -1725,7 +1848,7 @@ function exportWorkbenchData(){
   const snapshot=buildWorkbenchExportSnapshot();
   const stamp=new Date().toISOString().slice(0,19).replace(/[:T]/g,"-");
   downloadTextFile(`tk-content-workbench-data-${stamp}.json`,JSON.stringify(snapshot,null,2));
-  setGitHubStatus(`已导出工具数据包：${Object.keys(CUSTOM_PRODUCTS).length} 个扩展产品，${GENERATION_HISTORY.length} 条生成记录。`);
+  setGitHubStatus(`已导出工具数据包：${Object.keys(CUSTOM_PRODUCTS).length} 个扩展产品，${GENERATION_HISTORY.length} 条生成记录，${SAVED_IMAGE_LIBRARY.length} 张已保存图片。`);
 }
 
 function applyImportedWorkbenchData(payload){
@@ -1738,6 +1861,8 @@ function applyImportedWorkbenchData(payload){
   persistCustomProducts();
   GENERATION_HISTORY=Array.isArray(payload?.generationHistory)?payload.generationHistory:[];
   persistGenerationHistory();
+  SAVED_IMAGE_LIBRARY=Array.isArray(payload?.savedImageLibrary)?payload.savedImageLibrary:[];
+  persistSavedImageLibrary();
   if(payload?.githubSettings&&typeof payload.githubSettings==="object"){
     const current=getGitHubSettings();
     localStorage.setItem(STORAGE_KEYS.githubSettings,JSON.stringify({
@@ -1747,9 +1872,20 @@ function applyImportedWorkbenchData(payload){
       token:current.token||""
     }));
   }
+  if(payload?.ownerSyncSettings&&typeof payload.ownerSyncSettings==="object"){
+    const current=getOwnerSyncSettings();
+    localStorage.setItem(STORAGE_KEYS.ownerSyncSettings,JSON.stringify({
+      url:String(payload.ownerSyncSettings.url||current.url||"").trim(),
+      key:current.key||"",
+      actor:String(payload.ownerSyncSettings.actor||current.actor||"").trim(),
+      note:String(payload.ownerSyncSettings.note||current.note||"").trim()
+    }));
+  }
   initProductSelectors();
   renderSavedProductsList();
+  renderSavedImageLibrary();
   fillGitHubSettings();
+  fillOwnerSyncSettings();
   renderWorkspaceStats();
 }
 
@@ -1760,7 +1896,7 @@ async function handleImportStateChange(event){
     const text=await file.text();
     const payload=JSON.parse(text);
     applyImportedWorkbenchData(payload);
-    setGitHubStatus(`导入完成：${Object.keys(CUSTOM_PRODUCTS).length} 个扩展产品，${GENERATION_HISTORY.length} 条生成记录。`);
+    setGitHubStatus(`导入完成：${Object.keys(CUSTOM_PRODUCTS).length} 个扩展产品，${GENERATION_HISTORY.length} 条生成记录，${SAVED_IMAGE_LIBRARY.length} 张已保存图片。`);
   }catch(e){
     setGitHubStatus(`导入失败：${e.message}`,true);
   }
@@ -1809,6 +1945,93 @@ function saveGitHubSettings(){
   };
   localStorage.setItem(STORAGE_KEYS.githubSettings,JSON.stringify(settings));
   setGitHubStatus(`已保存 GitHub 配置：${settings.repo||"未填写仓库"} / ${settings.branch} / ${settings.folder}`);
+}
+
+function getOwnerSyncSettings(){
+  try{
+    const raw=JSON.parse(localStorage.getItem(STORAGE_KEYS.ownerSyncSettings)||"{}");
+    return {
+      url:String(raw.url||"").trim(),
+      key:String(raw.key||"").trim(),
+      actor:String(raw.actor||"").trim(),
+      note:String(raw.note||"").trim()
+    };
+  }catch{
+    return {url:"",key:"",actor:"",note:""};
+  }
+}
+
+function setOwnerSyncStatus(text,isError=false){
+  const el=document.getElementById("owner-sync-status");
+  if(!el)return;
+  el.textContent=text;
+  el.style.color=isError?"#A63C3C":"#35506B";
+}
+
+function fillOwnerSyncSettings(){
+  const settings=getOwnerSyncSettings();
+  const url=document.getElementById("owner-sync-url");
+  const key=document.getElementById("owner-sync-key");
+  const actor=document.getElementById("owner-sync-actor");
+  const note=document.getElementById("owner-sync-note");
+  if(url)url.value=settings.url;
+  if(key)key.value=settings.key;
+  if(actor)actor.value=settings.actor;
+  if(note)note.value=settings.note;
+}
+
+function saveOwnerSyncSettings(){
+  const settings={
+    url:document.getElementById("owner-sync-url").value.trim(),
+    key:document.getElementById("owner-sync-key").value.trim(),
+    actor:document.getElementById("owner-sync-actor").value.trim(),
+    note:document.getElementById("owner-sync-note").value.trim()
+  };
+  localStorage.setItem(STORAGE_KEYS.ownerSyncSettings,JSON.stringify(settings));
+  setOwnerSyncStatus(settings.url?`已保存云端接收配置：${settings.url}`:"还没有填写云端接收地址。",!settings.url);
+}
+
+async function syncToOwnerCloud(){
+  const settings={
+    url:document.getElementById("owner-sync-url").value.trim(),
+    key:document.getElementById("owner-sync-key").value.trim(),
+    actor:document.getElementById("owner-sync-actor").value.trim(),
+    note:document.getElementById("owner-sync-note").value.trim()
+  };
+  if(!settings.url){alert("请先填写云端接收地址");return;}
+  saveOwnerSyncSettings();
+  const btn=document.getElementById("btn-owner-sync");
+  btn.disabled=true;
+  try{
+    const snapshot=buildWorkbenchExportSnapshot();
+    const payload={
+      source:"tk-content-workbench",
+      submittedAt:new Date().toISOString(),
+      actor:settings.actor||"anonymous-user",
+      note:settings.note||"",
+      summary:{
+        customProductCount:Object.keys(CUSTOM_PRODUCTS).length,
+        generationHistoryCount:GENERATION_HISTORY.length,
+        savedImageCount:SAVED_IMAGE_LIBRARY.length
+      },
+      data:snapshot
+    };
+    const headers={"Content-Type":"application/json"};
+    if(settings.key)headers["X-Owner-Sync-Key"]=settings.key;
+    const res=await fetch(settings.url,{
+      method:"POST",
+      headers,
+      body:JSON.stringify(payload)
+    });
+    const text=await res.text();
+    if(!res.ok){
+      throw new Error(text||`HTTP ${res.status}`);
+    }
+    setOwnerSyncStatus(`云端同步成功：已提交 ${Object.keys(CUSTOM_PRODUCTS).length} 个扩展产品、${GENERATION_HISTORY.length} 条文案记录、${SAVED_IMAGE_LIBRARY.length} 张已保存图片。`);
+  }catch(e){
+    setOwnerSyncStatus(`云端同步失败：${e.message}`,true);
+  }
+  btn.disabled=false;
 }
 
 function populateSkuSelect(selectId,placeholder){
@@ -2242,6 +2465,11 @@ function downloadSavedImage(index){
   document.body.appendChild(a);
   a.click();
   a.remove();
+}
+
+function downloadSavedImageLibrary(){
+  if(!SAVED_IMAGE_LIBRARY.length)return;
+  SAVED_IMAGE_LIBRARY.forEach((_,index)=>downloadSavedImage(index));
 }
 
 function renderSavedImageLibrary(){
@@ -3009,6 +3237,7 @@ function encodeUtf8Base64(text){
 function buildGitHubSyncPayload(repo,branch,folder){
   const exportedAt=new Date().toISOString();
   const syncedProducts={};
+  const syncedSavedImages=[];
   const imageUploads=[];
   Object.entries(CUSTOM_PRODUCTS).forEach(([productId,product])=>{
     const cloned={
@@ -3043,10 +3272,33 @@ function buildGitHubSyncPayload(repo,branch,folder){
     });
     syncedProducts[productId]=cloned;
   });
+  SAVED_IMAGE_LIBRARY.forEach((image,index)=>{
+    const dataUrl=String(image.dataUrl||"").trim();
+    let githubPath="";
+    let githubRawUrl="";
+    if(dataUrl){
+      const ext=getDataUrlExtension(dataUrl);
+      githubPath=normalizeRepoPath(folder,`saved-images/${sanitizePathSegment(image.productId||"image")}/${index+1}.${ext}`);
+      githubRawUrl=buildGitHubRawUrl(repo,branch,githubPath);
+      imageUploads.push({
+        path:githubPath,
+        contentBase64:dataUrlToBase64(dataUrl),
+        message:`chore: sync saved image ${index+1}`
+      });
+    }
+    syncedSavedImages.push({
+      ...image,
+      githubPath,
+      githubRawUrl,
+      previewUrl:githubRawUrl||image.dataUrl||"",
+      syncedAt:exportedAt
+    });
+  });
   const manifest={
     exportedAt,
     customProductCount:Object.keys(CUSTOM_PRODUCTS).length,
     generationHistoryCount:GENERATION_HISTORY.length,
+    savedImageCount:SAVED_IMAGE_LIBRARY.length,
     repo,
     branch,
     folder
@@ -3054,6 +3306,7 @@ function buildGitHubSyncPayload(repo,branch,folder){
   return {
     manifest,
     syncedProducts,
+    syncedSavedImages,
     imageUploads,
     historySnapshot:GENERATION_HISTORY
   };
@@ -3084,6 +3337,7 @@ async function syncToGitHub(){
     }
     const productsPath=normalizeRepoPath(folder,"custom-products.json");
     const historyPath=normalizeRepoPath(folder,"generation-history.json");
+    const savedImagesPath=normalizeRepoPath(folder,"saved-image-library.json");
     const manifestPath=normalizeRepoPath(folder,"manifest.json");
     await upsertGitHubFile({
       repo,
@@ -3104,12 +3358,20 @@ async function syncToGitHub(){
     await upsertGitHubFile({
       repo,
       branch,
+      path:savedImagesPath,
+      token,
+      message:"chore: sync saved image library",
+      contentBase64:encodeUtf8Base64(JSON.stringify(payload.syncedSavedImages,null,2))
+    });
+    await upsertGitHubFile({
+      repo,
+      branch,
       path:manifestPath,
       token,
       message:"chore: sync content workbench manifest",
       contentBase64:encodeUtf8Base64(JSON.stringify(payload.manifest,null,2))
     });
-    setGitHubStatus(`同步完成：${Object.keys(CUSTOM_PRODUCTS).length} 个扩展产品、${GENERATION_HISTORY.length} 条生成记录、${payload.imageUploads.length} 张图片已推送到 ${repo}/${folder}`);
+    setGitHubStatus(`同步完成：${Object.keys(CUSTOM_PRODUCTS).length} 个扩展产品、${GENERATION_HISTORY.length} 条生成记录、${SAVED_IMAGE_LIBRARY.length} 张已保存图片、${payload.imageUploads.length} 个图片文件已推送到 ${repo}/${folder}`);
   }catch(e){
     setGitHubStatus(`GitHub 同步失败：${e.message}`,true);
   }
@@ -3129,8 +3391,11 @@ function initExtensionTab(){
   renderExtensionUploads();
   renderSavedProductsList();
   fillGitHubSettings();
+  fillOwnerSyncSettings();
   const settings=getGitHubSettings();
   setGitHubStatus(settings.repo?`当前配置：${settings.repo} / ${settings.branch} / ${settings.folder}`:"还没有执行 GitHub 同步。仓库配置会保存在当前浏览器，方便下次继续同步。");
+  const ownerSettings=getOwnerSyncSettings();
+  setOwnerSyncStatus(ownerSettings.url?`当前配置：${ownerSettings.url}`:"还没有执行云端接收同步。配置会保存在当前浏览器，方便用户下次继续提交。");
 }
 
 async function getMessages(type){
