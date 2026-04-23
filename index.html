@@ -91,6 +91,20 @@ select,textarea{width:100%;margin-bottom:2px}
 .github-box h3{font-size:14px;color:var(--color-text-primary);margin-bottom:8px}
 .github-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
 .github-status{margin-top:10px;padding:9px 10px;background:#EEF5FB;border-radius:var(--border-radius-md);font-size:12px;line-height:1.6;color:#35506B;border:0.5px solid #D6E3F1}
+.image-note{margin-top:8px;padding:9px 10px;background:#F4EFE7;border-radius:var(--border-radius-md);font-size:12px;color:#6A4B22;line-height:1.65;border:0.5px solid #E7D6BE}
+.image-prompt-box{margin-top:12px;padding:12px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:#FBFCFD}
+.image-prompt-label{font-size:12px;font-weight:600;color:var(--color-text-secondary)}
+.image-prompt-text{margin-top:8px;font-size:12px;line-height:1.75;color:var(--color-text-primary);white-space:pre-wrap}
+.image-prompt-tip{margin-top:8px;font-size:12px;line-height:1.6;color:#35506B}
+.image-gallery{margin-top:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.image-card{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);overflow:hidden;background:var(--color-background-primary)}
+.image-render{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;background:linear-gradient(135deg,#F7F3EE,#E8EEF7)}
+.image-card-body{padding:10px 11px}
+.image-card-title{font-size:12px;font-weight:600;color:var(--color-text-primary)}
+.image-card-meta{margin-top:4px;font-size:12px;line-height:1.55;color:var(--color-text-secondary)}
+.image-card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.image-small-btn{padding:6px 10px;border-radius:999px;border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);font-size:12px;cursor:pointer}
+.image-small-btn:hover{background:var(--color-background-secondary)}
 @media (max-width:760px){
   .hero-layout,.hero-stats,.setup-note,.row2,.row3,.ext-grid{grid-template-columns:1fr}
   .hero-shell{padding:18px}
@@ -177,6 +191,7 @@ select,textarea{width:100%;margin-bottom:2px}
     <div class="tab" data-tab="variant" onclick="switchTab('variant',this)">变体扩展</div>
     <div class="tab" data-tab="localize" onclick="switchTab('localize',this)">本土化</div>
     <div class="tab" data-tab="editor" onclick="switchTab('editor',this)">剪辑指令</div>
+    <div class="tab" data-tab="image" onclick="switchTab('image',this)">AI 生图</div>
     <div class="tab" data-tab="extension" onclick="switchTab('extension',this)">扩展产品</div>
   </div>
 
@@ -362,6 +377,85 @@ select,textarea{width:100%;margin-bottom:2px}
         <button class="copy-btn" onclick="copyOut('editor')">复制</button>
       </div>
       <div class="output-content" id="out-editor-text"></div>
+    </div>
+  </div>
+
+  <!-- AI 生图 -->
+  <div id="panel-image" class="panel">
+    <div class="row2">
+      <div>
+        <label>产品 SKU</label>
+        <select id="i-sku"></select>
+        <div class="product-note hidden" id="i-knowledge"></div>
+        <div class="product-media hidden" id="i-media"></div>
+        <label>画面目标</label>
+        <select id="i-scene">
+          <option value="studio hero packshot for ecommerce and TikTok thumbnail">电商主图 / Hero Packshot</option>
+          <option value="warm lifestyle scene showing the product in a safe real-life environment">生活方式场景图</option>
+          <option value="UGC-style still frame that looks like a polished TikTok capture">UGC 风格种草图</option>
+          <option value="premium soft-light product beauty shot with packaging clearly visible">高级质感产品图</option>
+          <option value="clean white-background catalog image with retail-ready clarity">白底目录图</option>
+        </select>
+        <label>视觉风格</label>
+        <select id="i-style">
+          <option value="photorealistic, retail-ready, texture-rich, commercially trustworthy">写实电商</option>
+          <option value="soft premium lighting, minimal composition, elevated but believable">高级简洁</option>
+          <option value="warm family-home mood, natural daylight, emotionally reassuring">温暖生活方式</option>
+          <option value="TikTok-friendly, modern, slightly handheld energy but still clean">短视频种草感</option>
+        </select>
+      </div>
+      <div>
+        <label>生图模型</label>
+        <select id="i-model">
+          <option value="gpt-image-1.5" selected>gpt-image-1.5（推荐）</option>
+          <option value="gpt-image-1">gpt-image-1（稳妥）</option>
+          <option value="gpt-image-1-mini">gpt-image-1-mini（更省）</option>
+        </select>
+        <label>画幅</label>
+        <select id="i-size">
+          <option value="1024x1536" selected>竖版 2:3</option>
+          <option value="1024x1024">方图 1:1</option>
+          <option value="1536x1024">横版 3:2</option>
+        </select>
+        <label>质量</label>
+        <select id="i-quality">
+          <option value="high" selected>高质量</option>
+          <option value="medium">中质量</option>
+          <option value="low">低质量</option>
+          <option value="auto">自动</option>
+        </select>
+        <label>生成数量</label>
+        <select id="i-count">
+          <option value="1" selected>1 张</option>
+          <option value="2">2 张</option>
+          <option value="3">3 张</option>
+        </select>
+      </div>
+    </div>
+    <label>补充要求（可选）</label>
+    <textarea id="i-extra" rows="4" placeholder="例：突出包装正面、背景更像欧美家庭浴室、不要出现夸张道具、适合做 TikTok 封面..."></textarea>
+    <div class="image-note">AI 会先结合产品知识卡、参考图片、卖点和你填写的要求自动整理英文提示词，再调用官方图像模型生成。如果该 SKU 绑定了参考图，会优先把它们作为视觉参考输入。若提示模型不可用，可切换到 `gpt-image-1`，或检查组织是否已完成 OpenAI 所需验证。</div>
+    <div class="compliance-note">⚠️ 生图提醒：默认规避液体展示、私密部位特写和医疗化视觉，只做安全、零售化、可投放的产品图。</div>
+    <button class="gen-btn" id="btn-image" onclick="generateProductImage()">生成图片</button>
+
+    <div class="image-prompt-box hidden" id="image-prompt-box">
+      <div class="output-header">
+        <span class="output-label">自动生成的提示词</span>
+        <span class="output-meta" id="meta-image"></span>
+        <button class="copy-btn" onclick="copyImagePrompt()">复制提示词</button>
+      </div>
+      <div class="image-prompt-text" id="image-prompt-text"></div>
+      <div class="image-prompt-tip" id="image-prompt-tip"></div>
+    </div>
+
+    <div class="output-area" id="out-image">
+      <div class="output-header">
+        <span class="output-label">生成图片</span>
+        <span class="output-meta" id="meta-image-gallery"></span>
+      </div>
+      <div class="output-content">
+        <div class="image-gallery" id="image-gallery"></div>
+      </div>
     </div>
   </div>
 
@@ -1237,8 +1331,8 @@ const BUILT_IN_PRODUCT_MEDIA={
   }]
 };
 
-const SELECT_NOTE_MAP={"s-sku":"s-knowledge","v-sku":"v-knowledge","l-sku":"l-knowledge","e-sku":"e-knowledge"};
-const SELECT_MEDIA_MAP={"s-sku":"s-media","v-sku":"v-media","l-sku":"l-media","e-sku":"e-media"};
+const SELECT_NOTE_MAP={"s-sku":"s-knowledge","v-sku":"v-knowledge","l-sku":"l-knowledge","e-sku":"e-knowledge","i-sku":"i-knowledge"};
+const SELECT_MEDIA_MAP={"s-sku":"s-media","v-sku":"v-media","l-sku":"l-media","e-sku":"e-media","i-sku":"i-media"};
 const STORAGE_KEYS={
   customProducts:"tk_content_custom_products_v6",
   generationHistory:"tk_content_generation_history_v6",
@@ -1249,6 +1343,9 @@ let CUSTOM_PRODUCTS={};
 let GENERATION_HISTORY=[];
 let extensionUploads=[];
 let lastExtensionDraft=null;
+let lastImagePromptDraft="";
+let lastImagePromptNote="";
+let lastGeneratedImages=[];
 const imageDataUrlCache={};
 
 Object.entries(BUILT_IN_PRODUCT_MEDIA).forEach(([productId,images])=>{
@@ -1773,10 +1870,11 @@ function initProductSelectors(){
   populateSkuSelect("v-sku","-- 选择产品 --");
   populateSkuSelect("l-sku","-- 可选：不指定产品 --");
   populateSkuSelect("e-sku","-- 可选：不指定产品 --");
+  populateSkuSelect("i-sku","-- 选择产品 --");
   syncScriptProduct();
-  ["v-sku","l-sku","e-sku"].forEach((id)=>renderProductContext(id));
+  ["v-sku","l-sku","e-sku","i-sku"].forEach((id)=>renderProductContext(id));
   bindEventOnce(document.getElementById("s-sku"),"change",syncScriptProduct);
-  ["v-sku","l-sku","e-sku"].forEach((id)=>{
+  ["v-sku","l-sku","e-sku","i-sku"].forEach((id)=>{
     bindEventOnce(document.getElementById(id),"change",()=>renderProductContext(id));
   });
 }
@@ -1927,6 +2025,278 @@ async function buildUserMessage(product,promptText){
   const mediaParts=await buildProductMediaContent(product);
   if(mediaParts.length)content.push(...mediaParts);
   return {role:"user",content};
+}
+
+function formatImageSizeLabel(size){
+  const sizeMap={
+    "1024x1536":"vertical 2:3 composition",
+    "1024x1024":"square 1:1 composition",
+    "1536x1024":"horizontal 3:2 composition"
+  };
+  return sizeMap[size]||size||"balanced composition";
+}
+
+function buildFallbackImagePrompt(product,scene,style,size,extra){
+  const productName=product?.englishName||"the selected absorbent-care product";
+  const packagingCue=product?.specs?`Keep the packaging realistic and consistent with the known pack information: ${product.specs}.`:"Keep the packaging retail-realistic and believable.";
+  const sellingPoints=(product?.keyPointsEn||[]).slice(0,3).join("; ")||"Use only safe, visible product cues and realistic category details.";
+  return [
+    `Create a ${scene} featuring ${productName}.`,
+    `Visual style: ${style}.`,
+    `Composition target: ${formatImageSizeLabel(size)}.`,
+    `Make the product and packaging the clear hero subject, with realistic proportions, clean retail lighting, and commercially trustworthy styling.`,
+    packagingCue,
+    `Use these approved product truths only: ${sellingPoints}.`,
+    extra?`Extra direction: ${extra}.`:"",
+    "No bodily fluids, no intimate body close-ups, no medical setting, no exaggerated text overlays, no fake certifications, no impossible packaging details."
+  ].filter(Boolean).join(" ");
+}
+
+function setImagePromptDisplay({promptText="",noteText="",metaText="",isVisible=false}={}){
+  const box=document.getElementById("image-prompt-box");
+  const promptEl=document.getElementById("image-prompt-text");
+  const tipEl=document.getElementById("image-prompt-tip");
+  const metaEl=document.getElementById("meta-image");
+  if(!box||!promptEl||!tipEl||!metaEl)return;
+  box.classList.toggle("hidden",!isVisible);
+  promptEl.textContent=promptText;
+  tipEl.textContent=noteText;
+  metaEl.textContent=metaText;
+}
+
+function setImageGalleryLoading(message){
+  const outArea=document.getElementById("out-image");
+  const gallery=document.getElementById("image-gallery");
+  const metaEl=document.getElementById("meta-image-gallery");
+  if(outArea)outArea.style.display="block";
+  if(gallery)gallery.innerHTML=`<div class="product-note" style="grid-column:1/-1">${escapeHtml(message)}</div>`;
+  if(metaEl)metaEl.textContent="";
+}
+
+function copyImagePrompt(){
+  if(!lastImagePromptDraft)return;
+  navigator.clipboard.writeText(lastImagePromptDraft).then(()=>{
+    const btn=document.querySelector("#image-prompt-box .copy-btn");
+    if(!btn)return;
+    btn.textContent="已复制";
+    setTimeout(()=>btn.textContent="复制提示词",1500);
+  });
+}
+
+function downloadGeneratedImage(index){
+  const image=lastGeneratedImages[index];
+  if(!image)return;
+  const a=document.createElement("a");
+  a.href=image.dataUrl||image.url||"";
+  a.download=image.filename||`tk-generated-${index+1}.png`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+function renderGeneratedImages(images,metaText){
+  const outArea=document.getElementById("out-image");
+  const gallery=document.getElementById("image-gallery");
+  const metaEl=document.getElementById("meta-image-gallery");
+  if(!outArea||!gallery||!metaEl)return;
+  outArea.style.display="block";
+  metaEl.textContent=metaText||"";
+  gallery.innerHTML=images.map((image,index)=>`
+    <div class="image-card">
+      <img class="image-render" src="${escapeHtml(image.dataUrl||image.url||"")}" alt="${escapeHtml(image.alt||`生成图 ${index+1}`)}" loading="lazy">
+      <div class="image-card-body">
+        <div class="image-card-title">方案 ${index+1}</div>
+        <div class="image-card-meta">${escapeHtml(image.caption||"可直接用于详情页主图、短视频封面或二次剪辑素材。")}</div>
+        <div class="image-card-actions">
+          <button class="image-small-btn" type="button" onclick="downloadGeneratedImage(${index})">下载图片</button>
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
+async function dataUrlToBlob(dataUrl){
+  const res=await fetch(dataUrl);
+  return res.blob();
+}
+
+async function getReferenceImagePayload(product){
+  const images=getReferenceImages(product).slice(0,IMAGE_MAX_ATTACHMENTS);
+  const refs=[];
+  for(let i=0;i<images.length;i+=1){
+    const image=images[i];
+    const dataUrl=await getImageDataUrl(image);
+    if(!dataUrl)continue;
+    refs.push({
+      label:image.label||`参考图 ${i+1}`,
+      dataUrl,
+      blob:await dataUrlToBlob(dataUrl),
+      filename:`reference-${i+1}.${getDataUrlExtension(dataUrl)}`
+    });
+  }
+  return refs;
+}
+
+async function buildImagePromptDraft(product,key){
+  const textModel=document.getElementById("model-select").value;
+  const scene=document.getElementById("i-scene").value;
+  const style=document.getElementById("i-style").value;
+  const size=document.getElementById("i-size").value;
+  const extra=document.getElementById("i-extra").value.trim();
+  const fallbackPrompt=buildFallbackImagePrompt(product,scene,style,size,extra);
+  try{
+    const startTime=Date.now();
+    const res=await fetch("https://api.openai.com/v1/chat/completions",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},
+      body:JSON.stringify({
+        model:textModel,
+        messages:[
+          {
+            role:"system",
+            content:buildSystemPrompt(product,"You are a senior ecommerce art director and prompt engineer creating production-ready prompts for OpenAI image generation. Your prompts must preserve product truth, packaging realism, and platform-safe retail presentation.")
+          },
+          await buildUserMessage(product,[
+            `Create one polished English image-generation prompt for ${product?.englishName||"the selected product"}.`,
+            `Image goal: ${scene}`,
+            `Visual direction: ${style}`,
+            `Target composition: ${formatImageSizeLabel(size)}`,
+            `Extra requirements: ${extra||"none"}`,
+            "",
+            "Prompt rules:",
+            "- Keep the selected product and its packaging as the clear hero",
+            "- Use only visible or confirmed product truths from the brief and attached images",
+            "- Mention lighting, camera framing, scene mood, materials, and composition",
+            "- Avoid text overlays, unrealistic floating UI, fake badges, fake certifications, medical visuals, explicit fluids, or intimate body close-ups",
+            "- Make the image commercially usable for TikTok cover art, ecommerce assets, or PDP visuals",
+            "",
+            "Return JSON only with these keys:",
+            "- image_prompt: one final English prompt under 220 words",
+            "- short_rationale: one short Chinese sentence explaining why this prompt fits the SKU",
+            "- safe_checks: an array of exactly 3 short Chinese checks"
+          ].join("\n"))
+        ],
+        response_format:{type:"json_object"},
+        temperature:0.55,
+        max_tokens:900
+      })
+    });
+    const data=await res.json();
+    if(!res.ok){
+      throw new Error(data.error?.message||`HTTP ${res.status}`);
+    }
+    const rawText=data.choices?.[0]?.message?.content||"{}";
+    const parsed=JSON.parse(sanitizeJsonText(rawText));
+    const prompt=String(parsed.image_prompt||parsed.prompt||"").trim()||fallbackPrompt;
+    const rationale=String(parsed.short_rationale||parsed.rationale||"").trim();
+    const safeChecks=Array.isArray(parsed.safe_checks)?parsed.safe_checks.map((item)=>String(item||"").trim()).filter(Boolean):[];
+    const elapsed=((Date.now()-startTime)/1000).toFixed(1);
+    return {
+      prompt,
+      rationale,
+      safeChecks,
+      metaText:`${textModel} 拟稿 · ${elapsed}s`
+    };
+  }catch{
+    return {
+      prompt:fallbackPrompt,
+      rationale:"已使用内置产品知识和参考图生成稳定版提示词。",
+      safeChecks:["聚焦包装与产品主体","避免露骨或医疗化画面","保持零售化、平台安全的场景表达"],
+      metaText:`${textModel} 拟稿失败，已切换到内置提示词`
+    };
+  }
+}
+
+async function generateProductImage(){
+  const key=document.getElementById("apikey").value.trim();
+  if(!key.startsWith("sk-")){alert("请先填写有效的 OpenAI API Key");return;}
+  const product=getSelectedProduct("i-sku");
+  if(!product){alert("请先选择产品 SKU");return;}
+  const imageModel=document.getElementById("i-model").value;
+  const size=document.getElementById("i-size").value;
+  const quality=document.getElementById("i-quality").value;
+  const count=Math.max(1,Math.min(3,Number(document.getElementById("i-count").value)||1));
+  const btn=document.getElementById("btn-image");
+  btn.disabled=true;
+  lastGeneratedImages=[];
+  setImagePromptDisplay({promptText:"正在结合产品资料与参考图生成提示词...",noteText:"",metaText:"",isVisible:true});
+  setImageGalleryLoading("正在调用图像模型生成图片，请稍候...");
+  try{
+    const promptDraft=await buildImagePromptDraft(product,key);
+    lastImagePromptDraft=promptDraft.prompt;
+    lastImagePromptNote=[
+      promptDraft.rationale,
+      promptDraft.safeChecks.length?`检查点：${promptDraft.safeChecks.join(" / ")}`:""
+    ].filter(Boolean).join("\n");
+    setImagePromptDisplay({
+      promptText:lastImagePromptDraft,
+      noteText:lastImagePromptNote,
+      metaText:promptDraft.metaText,
+      isVisible:true
+    });
+
+    const references=await getReferenceImagePayload(product);
+    const startTime=Date.now();
+    let res;
+    let data;
+    if(references.length){
+      const formData=new FormData();
+      formData.append("model",imageModel);
+      formData.append("prompt",lastImagePromptDraft);
+      formData.append("size",size);
+      formData.append("quality",quality);
+      formData.append("n",String(count));
+      formData.append("output_format","png");
+      references.forEach((ref)=>formData.append("image[]",ref.blob,ref.filename));
+      res=await fetch("https://api.openai.com/v1/images/edits",{
+        method:"POST",
+        headers:{"Authorization":"Bearer "+key},
+        body:formData
+      });
+      data=await res.json();
+    }else{
+      res=await fetch("https://api.openai.com/v1/images/generations",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},
+        body:JSON.stringify({
+          model:imageModel,
+          prompt:lastImagePromptDraft,
+          size,
+          quality,
+          n:count,
+          output_format:"png"
+        })
+      });
+      data=await res.json();
+    }
+    if(!res.ok){
+      throw new Error(data.error?.message||`HTTP ${res.status}`);
+    }
+    const images=(Array.isArray(data.data)?data.data:[]).map((item,index)=>({
+      dataUrl:item.b64_json?`data:image/png;base64,${item.b64_json}`:"",
+      url:String(item.url||""),
+      filename:`${sanitizePathSegment(product.englishName||"product","product")}-${Date.now()}-${index+1}.png`,
+      alt:`${product.englishName} generated visual ${index+1}`,
+      caption:references.length?`已参考 ${references.length} 张产品图进行生成。`:"基于产品卖点与自动提示词直接生成。"
+    })).filter((item)=>item.dataUrl||item.url);
+    if(!images.length){
+      throw new Error("图片接口未返回可展示的图片结果");
+    }
+    lastGeneratedImages=images;
+    const elapsed=((Date.now()-startTime)/1000).toFixed(1);
+    renderGeneratedImages(images,`${imageModel} · ${elapsed}s · ${images.length} 张 · ${references.length} 张参考图`);
+    addGenerationHistory("image_generation",product,[
+      `Image prompt for ${product.englishName}:`,
+      lastImagePromptDraft,
+      "",
+      lastImagePromptNote,
+      "",
+      `Image settings: ${imageModel} / ${size} / ${quality} / ${images.length} image(s) / ${references.length} reference image(s)`
+    ].filter(Boolean).join("\n"),`${imageModel} · ${elapsed}s · ${images.length} 张`);
+  }catch(e){
+    setImageGalleryLoading(`生图失败：${e.message}`);
+  }
+  btn.disabled=false;
 }
 
 function setExtensionStatus(text,isError=false){
